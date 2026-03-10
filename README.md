@@ -1,9 +1,3 @@
-# 🛡️ XencyPass - Offline Password Manager
-
-Welcome to the official documentation portal for **XencyPass**. This application is designed to keep your digital life secure with premium offline-first storage and private cloud backups.
-
----
-
 # 🛡️ XencyPass - Offline-First Password Manager
 
 ![License](https://img.shields.io/badge/License-MIT-orange.svg) 
