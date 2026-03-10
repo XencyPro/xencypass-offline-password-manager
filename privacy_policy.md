@@ -1,16 +1,28 @@
-# Privacy Policy for XencyPass
+# Privacy Policy for XencyPass 🔒
 
-**Last Updated: March 10, 2026**
+**Effective Date:** March 10, 2026  
+**Last Updated:** March 10, 2026
 
-### 1. Information Collection
-XencyPass is an **Offline-First** application. We do NOT collect, store, or share your passwords, master PIN, or recovery codes on any external servers.
+XencyPass is a local-first application designed for high-security credential management. Your privacy is our core mission. This policy explains how your data is handled.
 
-### 2. Google Drive Integration
-The app uses Google Drive API to provide a backup feature. 
-- **Ownership:** Backups are stored in a private folder in YOUR personal Google Drive.
-- **Access:** We (the developers) cannot see or access your backup files.
+### 1. Zero-Knowledge Architecture
+XencyPass operates on a "Zero-Knowledge" principle. We (the developers) do not have access to your Master PIN, passwords, or recovery codes. Your data is encrypted locally on your device using industry-standard AES encryption.
 
-### 3. Permissions
-- **Camera:** Used only for scanning documents or codes via OCR.
-- **Biometrics:** Used only locally to verify your identity.
-- **Internet:** Used strictly for Google Sign-In and Drive backups.
+### 2. Information Collection & Usage
+- **Personal Data:** We do NOT collect any personally identifiable information (PII).
+- **Credentials Data:** All passwords, recovery codes, and notes stay on your device's internal storage.
+- **No Third-Party Analytics:** We do not use any tracking scripts (like Firebase Analytics or Mixpanel) to monitor your behavior.
+
+### 3. Google Drive Integration (Cloud Backup)
+The application provides an optional backup feature via Google Drive API.
+- **Dedicated Folder:** XencyPass only creates and manages its own application-specific folder on your Drive.
+- **Privacy:** Your backup files are encrypted with your Master PIN before they leave your device. We cannot read your backup data.
+- **User Control:** You can disconnect your Google account or delete your backups directly from the app or your Google Drive settings at any time.
+
+### 4. Device Permissions
+- **Camera:** Used strictly for OCR (Optical Character Recognition) to scan documents or recovery keys.
+- **Biometric Hardware:** Used only for local authentication. The app never receives your actual fingerprint/face data; it only gets a "success" or "failure" signal from the OS.
+- **Internet Access:** Only required for syncing data with your personal Google Drive.
+
+### 5. Contact Information
+For any privacy-related concerns, please reach out at: **sahfay.official@gmail.com**
