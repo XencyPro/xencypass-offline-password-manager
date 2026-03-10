@@ -43,31 +43,22 @@ To ensure transparency and compliance, please review our official documentation:
   <img src="assets/screenshot2.png" width="250" />
 </p
 
+
 🛠️ Technology Stack
 Framework: Flutter (Dart)
-
 Storage: Encrypted Local Database
-
 API: Google Drive API (via Google Cloud Console)
-
 Security: Biometric Auth & AES Encryption
 
 📥 Getting Started
 Go to the Releases section.
 
-Download the latest app-release.apk.
+Download the latest XencyPass-release_1.0.1.apk.
 
 Follow the Installation Guide for detailed setup steps.
 
 📧 Support & Contact
 Have a question or found a bug?
-
 Developer: SahFay
-
 Email: sahfay.official@gmail.com
-
 Organization: XencyPro
-
-<p align="center">
-<b>XencyPro: Security Simplified. Your Data, Your Control.</b>
-</p>
