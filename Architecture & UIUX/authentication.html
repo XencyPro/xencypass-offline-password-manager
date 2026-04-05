@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>LockVault — Complete Secure Flow</title>
+  <!-- Google Fonts: Inter + Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0F172A;
+      font-family: 'Inter', 'Poppins', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Shared card */
+    .card {
+      max-width: 360px;
+      width: 100%;
+      background: linear-gradient(145deg, #111827 0%, #1F2937 100%);
+      border-radius: 28px;
+      padding: 22px 20px 26px 20px;
+      box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s;
+      animation: slideUpFade 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    @keyframes slideUpFade {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-content {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* Icon circle (logo) */
+    .icon-circle, .logo-circle {
+      background: rgba(59, 130, 246, 0.15);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+    }
+    .icon-circle i, .logo-circle i {
+      font-size: 34px;
+      color: #3B82F6;
+    }
+
+    .title {
+      text-align: center;
+      font-family: 'Poppins', 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 26px;
+      letter-spacing: -0.3px;
+      color: #E5E7EB;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #9CA3AF;
+      margin-top: -8px;
+    }
+
+    /* Input fields */
+    .input-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .input-field {
+      width: 100%;
+      background: #0A0F1A;
+      border: 1px solid #2D3A5E;
+      border-radius: 14px;
+      padding: 14px 42px 14px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: #E5E7EB;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      outline: none;
+    }
+    .input-field:focus {
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25), 0 0 8px rgba(59, 130, 246, 0.3);
+      background: #0F172A;
+      z-index: 2;
+    }
+    .input-field::placeholder {
+      color: #6C7A91;
+      font-weight: 400;
+    }
+    .input-field.error, .input-field.error-border {
+      border-color: #EF4444;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+    }
+
+    /* Password eye */
+    .toggle-password {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #8A99B4;
+      cursor: pointer;
+      font-size: 18px;
+      transition: color 0.2s, transform 0.15s ease;
+      z-index: 3;
+    }
+    .toggle-password:active {
+      transform: translateY(-50%) scale(0.92);
+    }
+    .toggle-password:hover {
+      color: #3B82F6;
+    }
+
+    /* Buttons */
+    .primary-btn {
+      background: #3B82F6;
+      border: none;
+      border-radius: 16px;
+      padding: 14px 12px;
+      width: 100%;
+      font-family: 'Inter', 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.1s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+      margin-top: 4px;
+    }
+    .primary-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+      transition-duration: 0.08s;
+    }
+    .primary-btn:disabled {
+      opacity: 0.5;
+      transform: scale(1);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .secondary-btn {
+      background: transparent;
+      border: 1px solid #3B82F6;
+      border-radius: 16px;
+      padding: 12px 12px;
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      color: #E5E7EB;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .secondary-btn:hover {
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    /* OTP group */
+    .otp-group {
+      display: flex;
+      gap: 8px;
+    }
+    .otp-group .input-wrapper {
+      flex: 1;
+    }
+    .send-otp-btn {
+      background: #2D3A5E;
+      border: none;
+      border-radius: 12px;
+      padding: 0 16px;
+      color: #E5E7EB;
+      font-weight: 500;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    .send-otp-btn:hover {
+      background: #3B82F6;
+    }
+
+    /* Footer links */
+    .footer-link {
+      text-align: center;
+      font-size: 12px;
+      color: #9CA3AF;
+      text-decoration: none;
+      transition: color 0.2s;
+      display: inline-block;
+      margin-top: 4px;
+    }
+    .footer-link:hover {
+      color: #3B82F6;
+    }
+
+    /* Security text */
+    .security-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #8A99B4;
+      text-align: center;
+    }
+
+    /* Password requirements & strength */
+    .requirements {
+      margin: 8px 0 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .req-item {
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #6C7A91;
+      transition: color 0.2s;
+    }
+    .req-item i {
+      font-size: 10px;
+    }
+    .req-item.met {
+      color: #4ADE80;
+    }
+    .strength-section {
+      margin-top: 4px;
+    }
+    .strength-label {
+      font-size: 11px;
+      color: #9CA3AF;
+      margin-bottom: 4px;
+    }
+    .strength-bar {
+      height: 4px;
+      background: #2D3A5E;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .strength-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.2s, background 0.2s;
+      border-radius: 4px;
+    }
+    .strength-fill.weak { background: #EF4444; }
+    .strength-fill.medium { background: #F59E0B; }
+    .strength-fill.strong { background: #10B981; }
+
+    /* Status message */
+    .status-message {
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 8px;
+      text-align: center;
+      min-height: 24px;
+    }
+    .status-message.error {
+      color: #F87171;
+    }
+    .shake {
+      animation: shakeEffect 0.4s ease-in-out;
+    }
+    @keyframes shakeEffect {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+      100% { transform: translateX(0); }
+    }
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.6s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 1. Login Screen (Master Password by default) -->
+<div id="loginScreen" class="card">
+  <div class="card-content">
+    <div class="logo-circle"><i class="fas fa-shield-alt"></i></div>
+    <div class="title">Welcome Back</div>
+
+    <!-- Email mode fields -->
+    <div id="loginEmailFields" class="hidden">
+      <div class="input-wrapper"><input type="email" id="loginEmail" class="input-field" placeholder="Email address"></div>
+      <div class="input-wrapper" style="margin-top: -1px;">
+        <input type="password" id="loginPassword" class="input-field" placeholder="Password">
+        <button type="button" class="toggle-password" data-target="loginPassword"><i class="far fa-eye-slash"></i></button>
+      </div>
+    </div>
+
+    <!-- Master mode fields -->
+    <div id="loginMasterFields">
+      <div class="input-wrapper">
+        <input type="password" id="masterPasswordLogin" class="input-field" placeholder="Master Password">
+        <button type="button" class="toggle-password" data-target="masterPasswordLogin"><i class="far fa-eye-slash"></i></button>
+      </div>
+      <div class="security-text" style="margin-top: 4px;"><i class="fas fa-info-circle"></i> Forgot master password? Login with email to reset</div>
+    </div>
+
+    <button id="modeToggleBtn" class="secondary-btn"><i class="fas fa-exchange-alt"></i> <span id="modeToggleText">Switch to Email Login</span></button>
+    <button id="loginBtn" class="primary-btn"><i class="fas fa-arrow-right-to-bracket"></i> Login</button>
+
+    <div class="security-text"><i class="fas fa-lock"></i> End-to-end encrypted</div>
+    <div class="footer-link"><a href="#" id="forgotPasswordLink" class="footer-link">Forgot password?</a></div>
+    <div class="footer-link"><a href="#" id="showSignupLink" class="footer-link">Don't have an account? <span style="color:#3B82F6;">Sign up</span></a></div>
+
+    <div id="loginStatus" class="status-message"></div>
+  </div>
+</div>
+
+<!-- 2. Signup Screen (with Master Password & Confirm fields) -->
+<div id="signupScreen" class="card hidden">
+  <div class="card-content">
+    <div class="logo-circle"><i class="fas fa-user-plus"></i></div>
+    <div class="title">Create Account</div>
+
+    <div class="input-wrapper"><input type="email" id="signupEmail" class="input-field" placeholder="Email address"></div>
+
+    <div class="otp-group">
+      <div class="input-wrapper"><input type="text" id="signupOtp" class="input-field" placeholder="6-digit OTP"></div>
+      <button id="sendOtpBtn" class="send-otp-btn">Send OTP</button>
+    </div>
+
+    <!-- Master Password and Confirm fields -->
+    <div class="input-wrapper">
+      <input type="password" id="signupMasterPass" class="input-field" placeholder="Master Password">
+      <button type="button" class="toggle-password" data-target="signupMasterPass"><i class="far fa-eye-slash"></i></button>
+    </div>
+    <div class="input-wrapper">
+      <input type="password" id="signupConfirmPass" class="input-field" placeholder="Confirm Master Password">
+      <button type="button" class="toggle-password" data-target="signupConfirmPass"><i class="far fa-eye-slash"></i></button>
+    </div>
+
+    <button id="signupSubmitBtn" class="primary-btn"><i class="fas fa-user-check"></i> Sign Up</button>
+
+    <div class="security-text"><i class="fas fa-shield-alt"></i> Secure System</div>
+
+    <div class="footer-link">
+      <a href="#" id="showLoginFromSignup" class="footer-link">Already have an account? <span style="color:#3B82F6;">Login</span></a>
+    </div>
+
+    <div id="signupStatus" class="status-message"></div>
+  </div>
+</div>
+
+<!-- 3. Security Questions Screen -->
+<div id="securityQuestionsScreen" class="card hidden">
+  <div class="card-content">
+    <div class="icon-circle"><i class="fas fa-question-circle"></i></div>
+    <div class="title">Security Questions</div>
+    <div class="subtitle">Answer these to help recover your account</div>
+
+    <div class="input-wrapper"><input type="text" id="sq1" class="input-field" placeholder="What was your first pet's name?"></div>
+    <div class="input-wrapper"><input type="text" id="sq2" class="input-field" placeholder="What city were you born in?"></div>
+    <div class="input-wrapper"><input type="text" id="sq3" class="input-field" placeholder="What was your favorite teacher's name?"></div>
+
+    <button id="securityQuestionsContinueBtn" class="primary-btn"><i class="fas fa-save"></i> Save & Continue</button>
+    <div class="security-text"><i class="fas fa-shield-alt"></i> Answers are encrypted</div>
+    <div id="securityQuestionsStatus" class="status-message"></div>
+  </div>
+</div>
+
+<!-- 4. Biometric (Fingerprint) Setup Screen -->
+<div id="biometricSetupScreen" class="card hidden">
+  <div class="card-content">
+    <div class="icon-circle"><i class="fas fa-fingerprint"></i></div>
+    <div class="title">Secure Your Vault</div>
+    <div class="subtitle">Enable fingerprint unlock for faster and secure access</div>
+    <button id="enableBiometricBtn" class="primary-btn"><i class="fas fa-fingerprint"></i> Enable Fingerprint</button>
+    <button id="skipBiometricBtn" class="secondary-btn">Skip for now</button>
+    <div id="biometricStatus" class="status-message"></div>
+  </div>
+</div>
+
+<!-- 5. Forgot Password Screen (unchanged) -->
+<div id="forgotScreen" class="card hidden">
+  <div class="card-content">
+    <div class="icon-circle"><i class="fas fa-key"></i></div>
+    <div class="title">Reset Password</div>
+    <div class="input-wrapper"><input type="email" id="forgotEmail" class="input-field" placeholder="Email address"></div>
+    <div class="otp-group">
+      <div class="input-wrapper"><input type="text" id="forgotOtp" class="input-field" placeholder="6-digit OTP"></div>
+      <button id="sendResetOtpBtn" class="send-otp-btn">Send OTP</button>
+    </div>
+    <div class="input-wrapper"><input type="password" id="newPassword" class="input-field" placeholder="New password"></div>
+    <div class="input-wrapper"><input type="password" id="confirmNewPassword" class="input-field" placeholder="Confirm new password"></div>
+    <button id="resetPasswordBtn" class="primary-btn"><i class="fas fa-save"></i> Reset Password</button>
+    <div class="security-text"><i class="fas fa-lock"></i> Secure System</div>
+    <div class="footer-link"><a href="#" id="backToLoginFromForgot" class="footer-link">← Back to Login</a></div>
+    <div id="forgotStatus" class="status-message"></div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    // ---------- Screen Management ----------
+    const loginScreen = document.getElementById('loginScreen');
+    const signupScreen = document.getElementById('signupScreen');
+    const securityQuestionsScreen = document.getElementById('securityQuestionsScreen');
+    const biometricScreen = document.getElementById('biometricSetupScreen');
+    const forgotScreen = document.getElementById('forgotScreen');
+
+    function showScreen(screen) {
+      loginScreen.classList.add('hidden');
+      signupScreen.classList.add('hidden');
+      securityQuestionsScreen.classList.add('hidden');
+      biometricScreen.classList.add('hidden');
+      forgotScreen.classList.add('hidden');
+      screen.classList.remove('hidden');
+    }
+
+    // Navigation shortcuts
+    document.getElementById('showSignupLink').addEventListener('click', (e) => { e.preventDefault(); showScreen(signupScreen); });
+    document.getElementById('showLoginFromSignup').addEventListener('click', (e) => { e.preventDefault(); showScreen(loginScreen); });
+    document.getElementById('forgotPasswordLink').addEventListener('click', (e) => { e.preventDefault(); showScreen(forgotScreen); });
+    document.getElementById('backToLoginFromForgot').addEventListener('click', (e) => { e.preventDefault(); showScreen(loginScreen); });
+
+    // ---------- Login Screen Logic ----------
+    const loginEmailFields = document.getElementById('loginEmailFields');
+    const loginMasterFields = document.getElementById('loginMasterFields');
+    const modeToggleBtn = document.getElementById('modeToggleBtn');
+    const modeToggleText = document.getElementById('modeToggleText');
+    const loginBtn = document.getElementById('loginBtn');
+    const forgotLink = document.getElementById('forgotPasswordLink');
+    const loginStatus = document.getElementById('loginStatus');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    const masterPasswordLogin = document.getElementById('masterPasswordLogin');
+
+    let isMasterMode = true;
+    function updateLoginUI() {
+      if (isMasterMode) {
+        loginEmailFields.classList.add('hidden');
+        loginMasterFields.classList.remove('hidden');
+        modeToggleText.textContent = 'Switch to Email Login';
+        forgotLink.style.display = 'none';
+      } else {
+        loginEmailFields.classList.remove('hidden');
+        loginMasterFields.classList.add('hidden');
+        modeToggleText.textContent = 'Switch to Master Key';
+        forgotLink.style.display = 'inline-block';
+      }
+      document.querySelectorAll('#loginScreen .input-field').forEach(f => f.classList.remove('error'));
+      loginStatus.innerHTML = '';
+    }
+    modeToggleBtn.addEventListener('click', () => { isMasterMode = !isMasterMode; updateLoginUI(); });
+    updateLoginUI();
+
+    function showLoginStatus(msg, isError = true) {
+      loginStatus.innerHTML = msg;
+      loginStatus.style.color = isError ? '#F87171' : '#4ADE80';
+      if (isError) loginScreen.classList.add('shake');
+      setTimeout(() => loginScreen.classList.remove('shake'), 400);
+      setTimeout(() => { if (loginStatus.innerHTML === msg) loginStatus.innerHTML = ''; }, 3000);
+    }
+
+    function handleLogin() {
+      if (isMasterMode) {
+        const mp = masterPasswordLogin.value.trim();
+        if (!mp) { showLoginStatus('❌ Master password cannot be empty'); masterPasswordLogin.classList.add('error'); return; }
+        showLoginStatus('✅ Master Key accepted. Vault unlocked.', false);
+        masterPasswordLogin.classList.remove('error');
+      } else {
+        const email = loginEmail.value.trim();
+        const pwd = loginPassword.value.trim();
+        let err = false;
+        if (!email) { showLoginStatus('❌ Email address is required'); loginEmail.classList.add('error'); err = true; }
+        if (!pwd) { if (!err) showLoginStatus('❌ Password is required'); loginPassword.classList.add('error'); err = true; }
+        if (err) return;
+        showLoginStatus(`✨ Welcome ${email}! Login successful.`, false);
+        loginEmail.classList.remove('error');
+        loginPassword.classList.remove('error');
+      }
+    }
+    loginBtn.addEventListener('click', handleLogin);
+    [loginEmail, loginPassword, masterPasswordLogin].forEach(inp => inp.addEventListener('keypress', e => { if (e.key === 'Enter') handleLogin(); }));
+
+    // ---------- Signup Screen (with Master Password fields) ----------
+    const signupEmail = document.getElementById('signupEmail');
+    const signupOtp = document.getElementById('signupOtp');
+    const signupMasterPass = document.getElementById('signupMasterPass');
+    const signupConfirmPass = document.getElementById('signupConfirmPass');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const signupSubmitBtn = document.getElementById('signupSubmitBtn');
+    const signupStatus = document.getElementById('signupStatus');
+
+    let otpSent = false, otpVerified = false;
+
+    function showSignupStatus(msg, isError = true) {
+      signupStatus.innerHTML = msg;
+      signupStatus.style.color = isError ? '#F87171' : '#4ADE80';
+      if (isError) signupScreen.classList.add('shake');
+      setTimeout(() => signupScreen.classList.remove('shake'), 400);
+      setTimeout(() => { if (signupStatus.innerHTML === msg) signupStatus.innerHTML = ''; }, 3000);
+    }
+
+    sendOtpBtn.addEventListener('click', () => {
+      const email = signupEmail.value.trim();
+      if (!email) { showSignupStatus('Please enter email address'); return; }
+      otpSent = true;
+      showSignupStatus(`📨 OTP sent to ${email}. Demo code: 123456`, false);
+    });
+
+    function verifyOtp() {
+      if (!otpSent) { showSignupStatus('Please request OTP first'); return false; }
+      if (signupOtp.value.trim() === '123456') {
+        otpVerified = true;
+        showSignupStatus('✓ OTP verified!', false);
+        return true;
+      } else {
+        showSignupStatus('Invalid OTP. Demo code: 123456');
+        return false;
+      }
+    }
+
+    signupSubmitBtn.addEventListener('click', async () => {
+      if (!verifyOtp()) return;
+
+      const master = signupMasterPass.value.trim();
+      const confirm = signupConfirmPass.value.trim();
+
+      if (!master) {
+        showSignupStatus('Master password is required');
+        signupMasterPass.classList.add('error');
+        return;
+      }
+      if (master.length < 4) {
+        showSignupStatus('Master password must be at least 4 characters');
+        signupMasterPass.classList.add('error');
+        return;
+      }
+      if (master !== confirm) {
+        showSignupStatus('Passwords do not match');
+        signupConfirmPass.classList.add('error');
+        return;
+      }
+
+      signupMasterPass.classList.remove('error');
+      signupConfirmPass.classList.remove('error');
+
+      const email = signupEmail.value.trim();
+      localStorage.setItem('vault_user_email', email);
+      localStorage.setItem('vault_master_password', master);
+      localStorage.setItem('vault_authenticated_before', 'true');
+
+      signupSubmitBtn.disabled = true;
+      signupSubmitBtn.innerHTML = `<span class="spinner"></span> Creating account...`;
+      await new Promise(r => setTimeout(r, 800));
+      showScreen(securityQuestionsScreen);
+      signupSubmitBtn.disabled = false;
+      signupSubmitBtn.innerHTML = '<i class="fas fa-user-check"></i> Sign Up';
+    });
+
+    // ---------- Security Questions Screen ----------
+    const sq1 = document.getElementById('sq1');
+    const sq2 = document.getElementById('sq2');
+    const sq3 = document.getElementById('sq3');
+    const securityContinue = document.getElementById('securityQuestionsContinueBtn');
+    const securityStatus = document.getElementById('securityQuestionsStatus');
+
+    securityContinue.addEventListener('click', async () => {
+      const answers = [sq1.value.trim(), sq2.value.trim(), sq3.value.trim()];
+      if (answers.some(a => a === '')) {
+        securityStatus.textContent = '❌ Please answer all questions';
+        securityStatus.className = 'status-message error';
+        return;
+      }
+      localStorage.setItem('security_answers', JSON.stringify(answers));
+      securityContinue.disabled = true;
+      securityContinue.innerHTML = `<span class="spinner"></span> Saving...`;
+      await new Promise(r => setTimeout(r, 500));
+      showScreen(biometricScreen);
+      securityContinue.disabled = false;
+      securityContinue.innerHTML = '<i class="fas fa-save"></i> Save & Continue';
+    });
+
+    // ---------- Biometric Setup Screen ----------
+    const enableBio = document.getElementById('enableBiometricBtn');
+    const skipBio = document.getElementById('skipBiometricBtn');
+    const bioStatus = document.getElementById('biometricStatus');
+
+    function showBioStatus(msg, isError = true) {
+      bioStatus.innerHTML = msg;
+      bioStatus.style.color = isError ? '#F87171' : '#4ADE80';
+      setTimeout(() => { if (bioStatus.innerHTML === msg) bioStatus.innerHTML = ''; }, 2000);
+    }
+    async function simulateFingerprint() {
+      return confirm("🔐 Enable fingerprint unlock?\n\nTap OK to simulate fingerprint enrollment.\nCancel to skip.");
+    }
+    enableBio.addEventListener('click', async () => {
+      enableBio.disabled = true;
+      enableBio.innerHTML = `<span class="spinner"></span> Enabling...`;
+      const success = await simulateFingerprint();
+      if (success) {
+        localStorage.setItem('biometric_enabled', 'true');
+        showBioStatus('✅ Fingerprint enabled successfully!', false);
+        setTimeout(() => showScreen(loginScreen), 1200);
+      } else {
+        showBioStatus('❌ Biometric setup cancelled or failed.', true);
+        enableBio.disabled = false;
+        enableBio.innerHTML = '<i class="fas fa-fingerprint"></i> Enable Fingerprint';
+      }
+    });
+    skipBio.addEventListener('click', () => {
+      localStorage.setItem('biometric_enabled', 'false');
+      showBioStatus('⏩ Biometric setup skipped. You can enable later.', false);
+      setTimeout(() => showScreen(loginScreen), 800);
+    });
+
+    // ---------- Forgot Password Screen ----------
+    const forgotEmail = document.getElementById('forgotEmail');
+    const forgotOtp = document.getElementById('forgotOtp');
+    const sendResetOtpBtn = document.getElementById('sendResetOtpBtn');
+    const newPassword = document.getElementById('newPassword');
+    const confirmNewPassword = document.getElementById('confirmNewPassword');
+    const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+    const forgotStatus = document.getElementById('forgotStatus');
+    let resetOtpSent = false, resetOtpVerified = false;
+
+    function showForgotStatus(msg, isError = true) {
+      forgotStatus.innerHTML = msg;
+      forgotStatus.style.color = isError ? '#F87171' : '#4ADE80';
+      if (isError) forgotScreen.classList.add('shake');
+      setTimeout(() => forgotScreen.classList.remove('shake'), 400);
+      setTimeout(() => { if (forgotStatus.innerHTML === msg) forgotStatus.innerHTML = ''; }, 3000);
+    }
+    sendResetOtpBtn.addEventListener('click', () => {
+      const email = forgotEmail.value.trim();
+      if (!email) { showForgotStatus('Please enter your email address'); return; }
+      resetOtpSent = true;
+      showForgotStatus(`📨 OTP sent to ${email}. Demo code: 123456`, false);
+    });
+    function verifyResetOtp() {
+      if (!resetOtpSent) { showForgotStatus('Please request OTP first'); return false; }
+      if (forgotOtp.value.trim() === '123456') {
+        resetOtpVerified = true;
+        showForgotStatus('✓ OTP verified. You can now set a new password.', false);
+        return true;
+      } else {
+        showForgotStatus('Invalid OTP. Demo code: 123456');
+        return false;
+      }
+    }
+    resetPasswordBtn.addEventListener('click', async () => {
+      if (!resetOtpVerified && !verifyResetOtp()) return;
+      const pwd = newPassword.value;
+      const confirm = confirmNewPassword.value;
+      if (!pwd) { showForgotStatus('Please enter a new password'); return; }
+      if (pwd !== confirm) { showForgotStatus('Passwords do not match'); return; }
+      if (pwd.length < 4) { showForgotStatus('Password must be at least 4 characters'); return; }
+      resetPasswordBtn.disabled = true;
+      resetPasswordBtn.innerHTML = `<span class="spinner"></span> Resetting...`;
+      await new Promise(r => setTimeout(r, 800));
+      const storedEmail = localStorage.getItem('vault_user_email');
+      if (storedEmail && storedEmail === forgotEmail.value.trim()) {
+        localStorage.setItem('vault_master_password', pwd);
+      }
+      showForgotStatus('✅ Password reset successful! You can now login.', false);
+      setTimeout(() => {
+        showScreen(loginScreen);
+        resetPasswordBtn.disabled = false;
+        resetPasswordBtn.innerHTML = '<i class="fas fa-save"></i> Reset Password';
+        forgotEmail.value = '';
+        forgotOtp.value = '';
+        newPassword.value = '';
+        confirmNewPassword.value = '';
+        resetOtpSent = false;
+        resetOtpVerified = false;
+      }, 1500);
+    });
+
+    // Common: password eye toggles
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const targetId = this.getAttribute('data-target');
+        const target = document.getElementById(targetId);
+        if (target) {
+          const type = target.getAttribute('type') === 'password' ? 'text' : 'password';
+          target.setAttribute('type', type);
+          const icon = this.querySelector('i');
+          if (type === 'text') icon.className = 'far fa-eye';
+          else icon.className = 'far fa-eye-slash';
+          this.style.transform = 'translateY(-50%) rotate(8deg)';
+          setTimeout(() => this.style.transform = '', 150);
+        }
+      });
+    });
+
+    // Start at login screen
+    showScreen(loginScreen);
+  })();
+</script>
+</body>
+</html>

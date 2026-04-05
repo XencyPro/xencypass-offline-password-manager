@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>XencyPass — Vault</title>
+  <!-- Google Fonts: Inter + Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: #0F172A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      color: #E5E7EB;
+    }
+
+    .vault-app {
+      max-width: 400px;
+      width: 100%;
+      height: 750px;
+      background: linear-gradient(145deg, #111827 0%, #1F2937 100%);
+      border-radius: 32px;
+      box-shadow: 0 20px 35px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- TOPBAR --- */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    
+    .app-icon {
+      width: 36px;
+      height: 36px;
+      background: #3B82F6;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+    }
+    .app-name {
+      font-weight: 700;
+      font-size: 18px;
+      color: #E5E7EB;
+      letter-spacing: -0.3px;
+    }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      background: #1E293B;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9CA3AF;
+      font-size: 16px;
+      border: 1px solid #2D3A5E;
+    }
+
+    /* --- SEARCH & FILTER --- */
+    .search-row {
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+    .search-wrapper {
+      flex: 1;
+      position: relative;
+    }
+    .search-wrapper i {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6C7A91;
+      font-size: 14px;
+    }
+    .search-input {
+      width: 100%;
+      background: #0A0F1A;
+      border: 1px solid #2D3A5E;
+      border-radius: 30px;
+      padding: 10px 12px 10px 40px;
+      font-size: 14px;
+      color: #E5E7EB;
+      outline: none;
+    }
+    .search-input:focus { border-color: #3B82F6; }
+
+    .filter-btn {
+      background: #0A0F1A;
+      border: 1px solid #2D3A5E;
+      width: 40px;
+      height: 40px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #E5E7EB;
+      transition: 0.2s;
+    }
+    .filter-btn.active { background: #3B82F6; border-color: #3B82F6; }
+
+    .filter-menu {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      background: #1F2937;
+      border: 1px solid #2D3A5E;
+      border-radius: 16px;
+      width: 180px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 50;
+      padding: 8px;
+      display: none;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .filter-menu.show { display: block; }
+    .filter-option {
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #9CA3AF;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: 0.2s;
+    }
+    .filter-option:hover { background: #0F172A; color: #E5E7EB; }
+    .filter-option.selected { color: #3B82F6; background: rgba(59, 130, 246, 0.1); }
+
+    /* --- TABS --- */
+    .tabs {
+      display: flex;
+      padding: 0 20px;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 0;
+      font-weight: 600;
+      font-size: 13px;
+      color: #9CA3AF;
+      cursor: pointer;
+      border-radius: 40px;
+      transition: all 0.2s;
+    }
+    .tab.active {
+      background: #3B82F6;
+      color: white;
+    }
+
+    /* --- LIST VIEW --- */
+    .content-area {
+      flex: 1;
+      padding: 10px 20px 80px 20px;
+      overflow-y: auto;
+    }
+
+    .list-item {
+      background: #0F172A;
+      border-radius: 16px;
+      padding: 14px 12px;
+      margin-bottom: 10px;
+      border: 1px solid #1E293B;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .list-item:hover { border-color: #3B82F6; }
+    
+    .item-main-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .item-header-part {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .item-icon { 
+      width: 36px; 
+      height: 36px; 
+      background: #1E293B; 
+      border-radius: 10px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      color: #3B82F6; 
+      flex-shrink: 0; 
+    }
+    
+    .item-info { flex: 1; overflow: hidden; }
+    .item-title { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-sub { font-size: 12px; color: #9CA3AF; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+    
+    .item-right-indicators { 
+      display: flex; 
+      align-items: center; 
+      gap: 10px; 
+      flex-shrink: 0;
+      height: 100%;
+    }
+    
+    .favorite-star { color: #F59E0B; font-size: 14px; }
+    .favorite-star.inactive { color: #6C7A91; opacity: 0.3; }
+    .strength-dot { width: 8px; height: 8px; border-radius: 50%; background: #6C7A91; }
+    .strength-dot.strong { background: #10B981; box-shadow: 0 0 4px #10B981; }
+    .strength-dot.medium { background: #F59E0B; box-shadow: 0 0 4px #F59E0B; }
+    .strength-dot.weak { background: #EF4444; box-shadow: 0 0 4px #EF4444; }
+
+    .tags-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .tag { font-size: 10px; padding: 2px 8px; border-radius: 30px; background: #1E293B; color: #9CA3AF; display: inline-flex; align-items: center; gap: 4px; }
+    .tag.important { background: rgba(239,68,68,0.15); color: #F87171; border: 0.5px solid rgba(239,68,68,0.3); }
+
+    /* --- OVERLAY SCREENS --- */
+    .screen-overlay {
+      position: absolute;
+      inset: 0;
+      background: #0F172A;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    .nav-header {
+      padding: 24px 20px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      background: #1F2937;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .back-btn:active { transform: scale(0.9); }
+
+    .screen-body { flex: 1; padding: 0 20px 40px; overflow-y: auto; }
+
+    /* --- FORM STYLING --- */
+    .form-group { margin-bottom: 20px; }
+    .form-label { font-size: 12px; color: #9CA3AF; margin-bottom: 8px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-input {
+      width: 100%;
+      background: #111827;
+      border: 1px solid #2D3A5E;
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: #E5E7EB;
+      outline: none;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+    .form-input:focus { border-color: #3B82F6; box-shadow: 0 0 0 1px #3B82F6; }
+    .form-textarea { height: 120px; resize: none; }
+    
+    .type-toggle {
+      display: flex;
+      gap: 10px;
+      background: #111827;
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+    .toggle-opt {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: 0.2s;
+    }
+    .toggle-opt.active { background: #3B82F6; color: white; }
+
+    .form-status-options {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .status-select-btn {
+      flex: 1;
+      background: #111827;
+      border: 1px solid #2D3A5E;
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #9CA3AF;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .status-select-btn.active.fav { border-color: #F59E0B; color: #F59E0B; background: rgba(245, 158, 11, 0.05); }
+    .status-select-btn.active.imp { border-color: #EF4444; color: #EF4444; background: rgba(239, 68, 68, 0.05); }
+
+    /* Detail View Styling */
+    .detail-top-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .detail-app-icon {
+      width: 56px;
+      height: 56px;
+      background: #1F2937;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3B82F6;
+      font-size: 24px;
+    }
+    .detail-titles { flex: 1; }
+    .detail-titles h2 { font-size: 22px; font-weight: 700; color: #E5E7EB; margin-bottom: 8px; }
+    .detail-titles p { font-size: 12px; color: #9CA3AF; }
+    .detail-header-icons { display: flex; gap: 15px; align-items: center; }
+    .fav-toggle-btn { font-size: 24px; color: #9CA3AF; cursor: pointer; transition: 0.2s; }
+    .fav-toggle-btn.active { color: #F59E0B; }
+    
+    .imp-static-indicator { font-size: 24px; color: #9CA3AF; cursor: pointer; position: relative; }
+    .imp-static-indicator.active { color: #EF4444; }
+
+    .premium-card {
+      background: #111827;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .card-label { font-size: 11px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; }
+    .card-value { font-size: 16px; font-weight: 500; color: #E5E7EB; display: flex; align-items: center; justify-content: space-between; }
+
+    .password-focus-card { border: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 0 4px 20px rgba(59, 130, 246, 0.05); }
+    .pwd-actions i { color: #3B82F6; cursor: pointer; padding: 4px; margin-left: 10px; }
+
+    .codes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 5px; }
+    .code-chip { background: #0A0F1A; border: 1px solid #1F2937; border-radius: 10px; padding: 8px; font-size: 13px; font-weight: 600; text-align: center; color: #3B82F6; cursor: pointer; }
+    
+    .phrase-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
+    .phrase-word { background: #0A0F1A; border: 1px solid #1F2937; border-radius: 8px; padding: 6px 10px; font-size: 12px; display: flex; gap: 8px; align-items: center; }
+    .word-index { color: #9CA3AF; font-size: 10px; font-weight: 700; }
+
+    /* --- FAB MENU --- */
+    .fab-menu {
+      position: absolute;
+      bottom: 90px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 200;
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+    }
+    .fab-menu.show { transform: translateY(0); opacity: 1; pointer-events: all; }
+    .fab-menu-btn {
+      background: #1F2937;
+      border: 1px solid #2D3A5E;
+      padding: 12px 20px;
+      border-radius: 20px;
+      color: #E5E7EB;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      white-space: nowrap;
+    }
+    .fab-menu-btn:hover { background: #3B82F6; border-color: #3B82F6; }
+
+    /* Dialogs & Toasts */
+    .dialog-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 30px; animation: fadeIn 0.2s; }
+    .dialog-card { background: #1F2937; border-radius: 24px; padding: 24px; text-align: center; border: 1px solid #3B82F6; max-width: 320px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    .dialog-card h3 { font-size: 18px; margin-bottom: 12px; color: #E5E7EB; }
+    .dialog-card p { font-size: 13px; line-height: 1.6; color: #9CA3AF; margin-bottom: 20px; }
+    .dialog-card i.status-icon { font-size: 40px; margin-bottom: 16px; display: block; }
+    .dialog-card.success i { color: #10B981; }
+    .dialog-card.danger i { color: #EF4444; }
+    .dialog-card.info i { color: #3B82F6; }
+
+    .dialog-footer { display: flex; gap: 12px; justify-content: center; }
+    .dialog-btn { flex: 1; padding: 12px; border-radius: 14px; font-weight: 600; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; }
+    .dialog-btn:active { transform: scale(0.95); }
+    .dialog-btn.cancel { background: #374151; color: #E5E7EB; }
+    .dialog-btn.confirm { background: #3B82F6; color: white; }
+    .dialog-btn.danger-btn { background: #EF4444; color: white; }
+
+    .toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: #1F2937; color: white; padding: 10px 20px; border-radius: 30px; font-size: 13px; opacity: 0; transition: 0.3s; z-index: 1000; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .fab-container { position: absolute; bottom: 24px; right: 24px; z-index: 201; }
+    .fab { background: #3B82F6; width: 56px; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; transition: 0.3s; }
+    .fab.active { transform: rotate(45deg); background: #EF4444; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .hidden { display: none !important; }
+
+    /* --- WALLET SPECIFIC STYLES --- */
+    .wallet-card-item {
+      min-height: 120px;
+      padding: 16px;
+      align-items: flex-start;
+      flex-direction: row;
+    }
+    .w-scan-box { width: 100%; height: 180px; background: #0A0F1A; border: 2px dashed #2D3A5E; border-radius: 16px; margin-top: 10px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; color: #6C7A91; cursor: pointer; overflow: hidden; position: relative; }
+    .w-scan-preview-img { width: 100%; height: 100%; object-fit: cover; }
+    .w-scan-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: 600; opacity: 0; transition: 0.3s; }
+    .w-scan-box:hover .w-scan-overlay { opacity: 1; }
+    .w-scanning-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: #3B82F6; box-shadow: 0 0 15px #3B82F6; animation: scanMove 2s infinite linear; display: none; }
+    @keyframes scanMove { 0% { top: 0; } 100% { top: 100%; } }
+    .w-detail-image-hero { width: 100%; height: 220px; border-radius: 20px; background: #0A0F1A; margin-bottom: 24px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; position: relative; cursor: zoom-in; }
+    .w-detail-image-hero img { width: 100%; height: 100%; object-fit: cover; }
+    .w-fullscreen-overlay { position: fixed; inset: 0; background: black; z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .w-fullscreen-image { max-width: 100%; max-height: 100%; border-radius: 12px; transform: scale(1); transition: transform 0.3s; }
+  </style>
+</head>
+<body>
+
+<div class="vault-app">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="app-icon"><i class="fas fa-shield-alt"></i></div>
+      <div class="app-name">XencyPass</div>
+    </div>
+    <div class="topbar-right">
+      <div class="avatar"><i class="fas fa-user"></i></div>
+    </div>
+  </div>
+
+  <div class="search-row">
+    <div class="search-wrapper">
+      <i class="fas fa-search"></i>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search your vault...">
+    </div>
+    <div class="filter-btn" id="filterToggle"><i class="fas fa-sliders-h"></i></div>
+    
+    <div class="filter-menu" id="filterMenu">
+      <!-- Dynamic Content -->
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="passwords">Passwords</div>
+    <div class="tab" data-tab="wallet">Wallet</div>
+    <div class="tab" data-tab="notes">Notes</div>
+  </div>
+
+  <div class="content-area" id="contentArea"></div>
+
+  <!-- FAB and Menu (Hidden but maintained for structure) -->
+  <div class="fab-menu" id="fabMenu">
+    <div class="fab-menu-btn" onclick="openAddCredentialsForm()"><i class="fas fa-key"></i> Add Credentials</div>
+    <div class="fab-menu-btn" onclick="openAddWalletForm()"><i class="fas fa-file-alt"></i> Add Document</div>
+    <div class="fab-menu-btn" onclick="openAddNoteScreen()"><i class="fas fa-sticky-note"></i> Add Note</div>
+  </div>
+
+  <div class="fab-container">
+    <div class="fab" id="fabBtn"><i class="fas fa-plus"></i></div>
+  </div>
+
+  <div id="toast" class="toast">Copied to clipboard</div>
+</div>
+
+<!-- Important Modal Dialog -->
+<div id="impDialog" class="dialog-overlay hidden">
+  <div class="dialog-card">
+    <h3>Enable Server Backup?</h3>
+    <p id="impDialogText">Marking this as important will trigger a secure server-side backup. This ensures your most critical credentials remain safe even if your local device data is lost. Proceed?</p>
+    <div class="dialog-footer">
+      <button class="dialog-btn cancel" id="cancelImpAction">Cancel</button>
+      <button class="dialog-btn confirm" id="confirmImpAction">Yes, Proceed</button>
+    </div>
+  </div>
+</div>
+
+<!-- Generic Bottom Action Dialog -->
+<div id="actionDialog" class="dialog-overlay hidden">
+  <div class="dialog-card" id="dialogCard">
+    <i class="fas fa-check-circle status-icon" id="dialogIcon"></i>
+    <h3 id="dialogTitle">Action Successful</h3>
+    <p id="dialogMessage">Your operation was completed successfully.</p>
+    <div class="dialog-footer" id="dialogFooter">
+      <button class="dialog-btn cancel hidden" id="dialogCancelBtn">Cancel</button>
+      <button class="dialog-btn confirm" id="dialogConfirmBtn">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- Helpers ----------
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function showRequiredError(fieldNames) {
+    showActionDialog('Missing Required Fields', `Please fill in: ${fieldNames.join(', ')}`, 'danger', 'OK', null, true);
+  }
+
+  // ---------- Data ----------
+  let passwords = [
+    { 
+      id: 'p1', 
+      type: 'app', 
+      name: 'Google', 
+      username: 'ay.user@gmail.com', 
+      password: 'SafePassword123!', 
+      category: 'Social', 
+      favorite: true, 
+      important: true, 
+      strength: 'strong',
+      digitsCodes: ['44556677', '11223344', '99887766'],
+      secretPhrase: 'apple banana cherry dragon elephant forest', 
+      websiteLink: '',
+      note: 'Primary personal account.'
+    },
+    { 
+      id: 'p2', 
+      type: 'website', 
+      name: 'GitHub', 
+      username: 'ay_developer', 
+      password: 'ghp_secure_token_abc', 
+      category: 'Dev', 
+      favorite: false, 
+      important: false, 
+      strength: 'medium',
+      digitsCodes: ['88775522'],
+      secretPhrase: 'mountain ocean stars', 
+      websiteLink: 'https://github.com',
+      note: 'Used for main repository backup.'
+    }
+  ];
+
+  let walletItems = [
+    {
+      id: 'w1',
+      type: 'Bank Card',
+      category: 'Visa',
+      name: 'Primary Debit Card',
+      holder: 'Johnathan User',
+      number: '4532889012348765',
+      expiry: '08/28',
+      favorite: true,
+      important: true,
+      image: 'https://images.unsplash.com/photo-1542382257-80dedb725088?auto=format&fit=crop&q=80&w=400'
+    },
+    {
+      id: 'w2',
+      type: 'Passport',
+      name: 'National Passport',
+      holder: 'Johnathan User',
+      number: 'AK88223344',
+      expiry: '12/10/2032',
+      favorite: false,
+      important: false,
+      image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&q=80&w=400'
+    }
+  ];
+
+  let notes = [
+    {
+      id: 'n1',
+      title: 'Meeting Notes',
+      content: 'Discuss Q3 roadmap with the team. Include budget allocation and resource planning.',
+      tags: ['work', 'meeting'],
+      favorite: true,
+      important: false,
+      locked: false,
+      updatedAt: new Date().toISOString()
+    },
+    {
+      id: 'n2',
+      title: 'Personal Ideas',
+      content: 'New app feature: voice notes integration. Maybe use Web Speech API.',
+      tags: ['ideas'],
+      favorite: false,
+      important: true,
+      locked: true,
+      updatedAt: new Date().toISOString()
+    }
+  ];
+
+  let activeTab = 'passwords';
+  let searchQuery = '';
+  let activeFilter = 'all';
+  let dialogCallback = null;
+
+  // --- ACTION DIALOG LOGIC ---
+  function showActionDialog(title, message, type = 'success', confirmText = 'OK', onConfirm = null, isSingleBtn = false) {
+    const dialog = document.getElementById('actionDialog');
+    const card = document.getElementById('dialogCard');
+    const icon = document.getElementById('dialogIcon');
+    const titleEl = document.getElementById('dialogTitle');
+    const msgEl = document.getElementById('dialogMessage');
+    const confirmBtn = document.getElementById('dialogConfirmBtn');
+    const cancelBtn = document.getElementById('dialogCancelBtn');
+
+    card.className = 'dialog-card ' + type;
+    cancelBtn.className = 'dialog-btn cancel ' + (isSingleBtn ? 'hidden' : '');
+    confirmBtn.className = 'dialog-btn confirm ' + (type === 'danger' ? 'danger-btn' : '');
+
+    titleEl.textContent = title;
+    msgEl.textContent = message;
+    confirmBtn.textContent = confirmText;
+
+    if(type === 'success') icon.className = 'fas fa-check-circle status-icon';
+    else if(type === 'danger') icon.className = 'fas fa-exclamation-circle status-icon';
+    else icon.className = 'fas fa-info-circle status-icon';
+
+    dialog.classList.remove('hidden');
+
+    confirmBtn.onclick = () => {
+      dialog.classList.add('hidden');
+      if (onConfirm) onConfirm();
+    };
+
+    cancelBtn.onclick = () => {
+      dialog.classList.add('hidden');
+    };
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  function copyToClipboard(text, label = "Data") {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    
+    showActionDialog(label + ' Copied!', 'Your data has been securely stored in the clipboard.', 'success', 'Close', null, true);
+  }
+
+  function maskData(val) {
+    if (!val) return '';
+    const clean = val.replace(/\s/g, '');
+    if (clean.length <= 4) return val;
+    return '•••• •••• •••• ' + clean.slice(-4);
+  }
+
+  function renderList() {
+    const container = document.getElementById('contentArea');
+    
+    if (activeTab === 'passwords') {
+      let filtered = passwords.filter(p => {
+        const matchesSearch = p.name.toLowerCase().includes(searchQuery) || p.username.toLowerCase().includes(searchQuery);
+        let matchesFilter = true;
+        if (activeFilter === 'favorites') matchesFilter = p.favorite;
+        else if (activeFilter === 'important') matchesFilter = p.important;
+        else if (activeFilter === 'strong') matchesFilter = p.strength === 'strong';
+        return matchesSearch && matchesFilter;
+      });
+      
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding-top:40px; color:#6C7A91; font-size:14px;">No items found in your vault.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(p => `
+        <div class="list-item" onclick="openDetail('${p.id}')">
+          <div class="item-main-content">
+            <div class="item-header-part">
+              <div class="item-icon"><i class="fas ${p.type === 'app' ? 'fa-mobile-alt' : 'fa-globe'}"></i></div>
+              <div class="item-info">
+                <div class="item-title">${p.name}</div>
+                <div class="item-sub">${p.username}</div>
+              </div>
+            </div>
+            <div class="tags-row">
+              ${p.digitsCodes.length > 0 ? `<span class="tag"><i class="fas fa-hashtag"></i> ${p.digitsCodes.length} Codes</span>` : ''}
+              ${p.secretPhrase ? `<span class="tag"><i class="fas fa-comment-dots"></i> Secret Phrase</span>` : ''}
+              ${p.important ? `<span class="tag important"><i class="fas fa-exclamation-triangle"></i> Important</span>` : ''}
+            </div>
+          </div>
+          <div class="item-right-indicators">
+            <i class="fas fa-star favorite-star ${p.favorite ? '' : 'inactive'}"></i>
+            <span class="strength-dot ${p.strength}"></span>
+          </div>
+        </div>
+      `).join('');
+    } else if (activeTab === 'wallet') {
+      let filtered = walletItems.filter(w => {
+        const matchesSearch = w.name.toLowerCase().includes(searchQuery) || (w.holder && w.holder.toLowerCase().includes(searchQuery));
+        let matchesFilter = true;
+        if (activeFilter === 'favorites') matchesFilter = w.favorite;
+        else if (activeFilter === 'important') matchesFilter = w.important;
+        else if (activeFilter === 'identity') matchesFilter = w.type === 'Identity Card' || w.type === 'License';
+        else if (activeFilter === 'financial') matchesFilter = w.type === 'Bank Card';
+        else if (activeFilter === 'travel') matchesFilter = w.type === 'Passport';
+        return matchesSearch && matchesFilter;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding-top:40px; color:#6C7A91; font-size:14px;">Your digital wallet is empty.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(w => `
+        <div class="list-item wallet-card-item" onclick="openWalletDetail('${w.id}')">
+          <div class="item-main-content">
+            <div class="item-header-part" style="margin-bottom: 8px;">
+              <div class="item-icon">
+                <i class="fas ${w.type === 'Passport' ? 'fa-passport' : w.type === 'Bank Card' ? 'fa-credit-card' : 'fa-id-card'}"></i>
+              </div>
+              <div class="item-info">
+                <div class="item-title" style="font-size: 16px;">${w.name}</div>
+                <div class="item-sub" style="color: #E5E7EB; font-weight: 500;">${w.holder || 'Secured Document'}</div>
+              </div>
+            </div>
+            
+            ${w.number ? `<div style="font-family: monospace; letter-spacing: 2px; color: #3B82F6; font-size: 14px; margin-bottom: 12px; padding-left: 48px;">
+               ${maskData(w.number)}
+            </div>` : ''}
+
+            <div class="tags-row">
+               <span class="tag"><i class="fas fa-file-alt"></i> ${w.type}</span>
+               ${w.category ? `<span class="tag"><i class="fas fa-tag"></i> ${w.category}</span>` : ''}
+               ${w.important ? `<span class="tag important"><i class="fas fa-exclamation-triangle"></i> Important</span>` : ''}
+               ${w.expiry || w.expiryDate ? `<span class="tag"><i class="fas fa-calendar-alt"></i> ${w.expiry || w.expiryDate}</span>` : ''}
+               ${w.customFields && w.customFields.length > 0 ? `<span class="tag"><i class="fas fa-list-ul"></i> ${w.customFields.length} Fields</span>` : ''}
+            </div>
+          </div>
+          <div class="item-right-indicators">
+             <i class="fas fa-star favorite-star ${w.favorite ? '' : 'inactive'}" style="font-size: 18px;"></i>
+          </div>
+        </div>
+      `).join('');
+    } else if (activeTab === 'notes') {
+      let filtered = notes.filter(n => {
+        const matchesSearch = n.title.toLowerCase().includes(searchQuery) || n.content.toLowerCase().includes(searchQuery);
+        let matchesFilter = true;
+        if (activeFilter === 'favorites') matchesFilter = n.favorite;
+        else if (activeFilter === 'important') matchesFilter = n.important;
+        else if (activeFilter === 'locked') matchesFilter = n.locked;
+        return matchesSearch && matchesFilter;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding-top:40px; color:#6C7A91; font-size:14px;">No notes found.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(n => {
+        const preview = n.locked ? '' : (n.content.length > 60 ? n.content.substring(0, 60) + '…' : n.content);
+        const updated = new Date(n.updatedAt).toLocaleDateString();
+        return `
+          <div class="list-item" onclick="openNoteDetail('${n.id}')">
+            <div class="item-main-content">
+              <div class="item-header-part">
+                <div class="item-icon"><i class="fas fa-sticky-note"></i></div>
+                <div class="item-info">
+                  <div class="item-title">${escapeHtml(n.title)}</div>
+                  ${!n.locked ? `<div class="item-sub">${escapeHtml(preview)}</div>` : `<div class="item-sub"><i class="fas fa-lock"></i> Locked note</div>`}
+                </div>
+              </div>
+              <div class="tags-row">
+                ${n.tags.slice(0, 2).map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+                ${n.tags.length > 2 ? `<span class="tag">+${n.tags.length-2}</span>` : ''}
+                <span class="tag">${updated}</span>
+              </div>
+            </div>
+            <div class="item-right-indicators">
+              <i class="fas fa-star favorite-star ${n.favorite ? '' : 'inactive'}"></i>
+              ${n.locked ? '<i class="fas fa-lock" style="color:#9CA3AF;"></i>' : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  function showImportantDialog(onConfirm) {
+    dialogCallback = onConfirm;
+    document.getElementById('impDialog').classList.remove('hidden');
+  }
+
+  // ---------- WALLET LOGIC ----------
+  function setupCustomFields(overlay, existingFields) {
+    const container = overlay.querySelector('#customFieldsContainer') || overlay.querySelector('#editCustomFieldsContainer');
+    if (!container) return;
+    
+    function createFieldRow(label = '', value = '') {
+      const row = document.createElement('div');
+      row.className = 'custom-field-row';
+      row.style.display = 'flex'; row.style.gap = '8px'; row.style.marginBottom = '8px';
+      row.innerHTML = `
+        <input type="text" class="form-input" placeholder="Field Label" style="flex: 1;" value="${escapeHtml(label)}">
+        <input type="text" class="form-input" placeholder="Value" style="flex: 2;" value="${escapeHtml(value)}">
+        <button type="button" class="remove-field-btn" style="background: #EF4444; border: none; color: white; width: 36px; border-radius: 8px; cursor: pointer;">
+          <i class="fas fa-trash"></i>
+        </button>
+      `;
+      row.querySelector('.remove-field-btn').onclick = () => row.remove();
+      return row;
+    }
+    
+    container.innerHTML = '';
+    if (existingFields.length === 0) {
+      container.appendChild(createFieldRow('', ''));
+    } else {
+      existingFields.forEach(f => container.appendChild(createFieldRow(f.label, f.value)));
+    }
+    
+    const addBtn = overlay.querySelector('#addCustomFieldBtn') || overlay.querySelector('#editAddCustomFieldBtn');
+    if (addBtn && !addBtn.hasListener) {
+      addBtn.onclick = () => container.appendChild(createFieldRow('', ''));
+      addBtn.hasListener = true;
+    }
+  }
+
+  function openAddWalletForm(skipToggle = false) {
+    if (!skipToggle) toggleFabMenu();
+    const overlay = document.createElement('div');
+    overlay.className = 'screen-overlay';
+    overlay.id = 'walletFormScreen';
+    document.querySelector('.fab-container').classList.add('hidden');
+
+    overlay.innerHTML = `
+      <div class="nav-header">
+        <div class="back-btn" onclick="closeOverlay('walletFormScreen')"><i class="fas fa-chevron-left"></i></div>
+        <div class="app-name">Add Document</div>
+        <div class="back-btn" id="saveWalletBtn" style="color: #3B82F6;"><i class="fas fa-check"></i></div>
+      </div>
+      <div class="screen-body">
+        <div class="form-group">
+          <label class="form-label">Document Type</label>
+          <select class="form-input" id="wType">
+            <option value="Identity Card">Identity Card</option>
+            <option value="Passport">Passport</option>
+            <option value="Bank Card">Bank Card</option>
+            <option value="License">Driving License</option>
+            <option value="Custom">Custom Document</option>
+          </select>
+        </div>
+
+        <div id="wCategoryGroup" class="form-group hidden">
+           <label class="form-label">Category</label>
+           <select class="form-input" id="wCategory"></select>
+        </div>
+
+        <div id="dynamicFields"></div>
+        <div id="extraFields" class="hidden"></div>
+
+        <label class="form-label">Document Scan / Photo</label>
+        <div class="w-scan-box" id="scanTrigger">
+          <div class="w-scanning-line" id="scanLine"></div>
+          <i class="fas fa-camera" style="font-size: 24px;"></i>
+          <span>Live Scan or Upload Image</span>
+          <img id="wPreviewImg" class="w-scan-preview-img hidden">
+          <div class="w-scan-overlay" id="scanOverlay">Change Photo</div>
+        </div>
+        <input type="file" id="wFileInput" class="hidden" accept="image/*">
+
+        <label class="form-label" style="margin-top: 24px;">Security Settings</label>
+        <div class="form-status-options">
+          <div class="status-select-btn fav" id="wFavToggle">
+            <i class="fas fa-star"></i> Favorite
+          </div>
+          <div class="status-select-btn imp" id="wImpToggle">
+            <i class="fas fa-exclamation-triangle"></i> Important
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.querySelector('.vault-app').appendChild(overlay);
+
+    const typeSelect = overlay.querySelector('#wType');
+    const catGroup = overlay.querySelector('#wCategoryGroup');
+    const catSelect = overlay.querySelector('#wCategory');
+    const fieldsDiv = overlay.querySelector('#dynamicFields');
+    const extraDiv = overlay.querySelector('#extraFields');
+
+    function updateFields() {
+      const type = typeSelect.value;
+      let html = '';
+      let extraHtml = '';
+      catGroup.classList.add('hidden');
+      extraDiv.classList.add('hidden');
+
+      if (type === 'Bank Card') {
+        catGroup.classList.remove('hidden');
+        catSelect.innerHTML = `<option>Visa</option><option>MasterCard</option><option>Debit</option><option>Credit</option>`;
+        html = `
+          <div class="form-group"><label class="form-label">Label Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wName" placeholder="Personal Card"></div>
+          <div class="form-group"><label class="form-label">Card Holder Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wHolder" placeholder="FULL NAME"></div>
+          <div class="form-group"><label class="form-label">Card Number <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wNum" placeholder="0000 0000 0000 0000"></div>
+          <div class="form-group"><label class="form-label">Expiry Date (MM/YY) <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wExp" placeholder="MM/YY"></div>
+        `;
+        extraHtml = `
+          <div class="form-group"><label class="form-label">CVV / CVC <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wCvv" placeholder="123" maxlength="4"></div>
+          <div class="form-group"><label class="form-label">PIN (optional)</label><input type="text" class="form-input" id="wPin" placeholder="****"></div>
+        `;
+        extraDiv.classList.remove('hidden');
+      } else if (type === 'Identity Card') {
+        catGroup.classList.remove('hidden');
+        catSelect.innerHTML = `<option>National ID</option><option>Voter ID</option><option>Residence Permit</option>`;
+        html = `
+          <div class="form-group"><label class="form-label">Label Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wName" placeholder="My ID"></div>
+          <div class="form-group"><label class="form-label">Full Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wHolder" placeholder="FULL NAME"></div>
+          <div class="form-group"><label class="form-label">ID Number <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wNum" placeholder="123-456-789"></div>
+          <div class="form-group"><label class="form-label">Date of Birth</label><input type="text" class="form-input" id="wExp" placeholder="DD/MM/YYYY"></div>
+        `;
+        extraHtml = `
+          <div class="form-group"><label class="form-label">Expiry Date</label><input type="text" class="form-input" id="wExpiryDate" placeholder="DD/MM/YYYY"></div>
+          <div class="form-group"><label class="form-label">Issuing Authority</label><input type="text" class="form-input" id="wIssuingAuthority" placeholder="e.g. Govt Office"></div>
+        `;
+        extraDiv.classList.remove('hidden');
+      } else if (type === 'Passport') {
+        html = `
+          <div class="form-group"><label class="form-label">Passport Label <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wName" placeholder="Official Passport"></div>
+          <div class="form-group"><label class="form-label">Full Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wHolder" placeholder="FULL NAME"></div>
+          <div class="form-group"><label class="form-label">Passport Number <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wNum" placeholder="A1234567"></div>
+          <div class="form-group"><label class="form-label">Expiry Date <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wExp" placeholder="DD/MM/YYYY"></div>
+        `;
+        extraHtml = `
+          <div class="form-group"><label class="form-label">Date of Birth</label><input type="text" class="form-input" id="wDob" placeholder="DD/MM/YYYY"></div>
+          <div class="form-group"><label class="form-label">Nationality</label><input type="text" class="form-input" id="wNationality" placeholder="Country"></div>
+          <div class="form-group"><label class="form-label">Place of Birth</label><input type="text" class="form-input" id="wPlaceOfBirth" placeholder="City, Country"></div>
+          <div class="form-group"><label class="form-label">Issue Date</label><input type="text" class="form-input" id="wIssueDate" placeholder="DD/MM/YYYY"></div>
+        `;
+        extraDiv.classList.remove('hidden');
+      } else if (type === 'License') {
+        catGroup.classList.remove('hidden');
+        catSelect.innerHTML = `<option>Car</option><option>Motorcycle</option><option>Commercial</option>`;
+        html = `
+          <div class="form-group"><label class="form-label">License Label <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wName" placeholder="Driver License"></div>
+          <div class="form-group"><label class="form-label">Full Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wHolder" placeholder="FULL NAME"></div>
+          <div class="form-group"><label class="form-label">License Number <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wNum" placeholder="DL123456"></div>
+          <div class="form-group"><label class="form-label">Date of Birth</label><input type="text" class="form-input" id="wExp" placeholder="DD/MM/YYYY"></div>
+        `;
+        extraHtml = `
+          <div class="form-group"><label class="form-label">Expiry Date <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wExpiryDate" placeholder="DD/MM/YYYY"></div>
+          <div class="form-group"><label class="form-label">Issuing State/Country</label><input type="text" class="form-input" id="wIssuingState" placeholder="State/Country"></div>
+        `;
+        extraDiv.classList.remove('hidden');
+      } else { // Custom
+        html = `
+          <div class="form-group"><label class="form-label">Document Title <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wName" placeholder="e.g. Contract"></div>
+          <div class="form-group">
+            <label class="form-label">Custom Fields</label>
+            <div id="customFieldsContainer" style="margin-top: 8px;"></div>
+            <button type="button" id="addCustomFieldBtn" class="form-input" style="background: #1F2937; text-align: center; margin-top: 12px; cursor:pointer;">
+              <i class="fas fa-plus"></i> Add Field
+            </button>
+          </div>
+        `;
+        extraHtml = '';
+        extraDiv.classList.remove('hidden');
+      }
+      fieldsDiv.innerHTML = html;
+      extraDiv.innerHTML = extraHtml;
+      if (type === 'Custom') setupCustomFields(overlay, []);
+    }
+
+    typeSelect.onchange = updateFields;
+    updateFields();
+
+    const scanTrigger = overlay.querySelector('#scanTrigger');
+    const fileInput = overlay.querySelector('#wFileInput');
+    const scanLine = overlay.querySelector('#scanLine');
+    const previewImg = overlay.querySelector('#wPreviewImg');
+
+    scanTrigger.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        scanLine.style.display = 'block';
+        setTimeout(() => {
+          scanLine.style.display = 'none';
+          const reader = new FileReader();
+          reader.onload = (re) => { previewImg.src = re.target.result; previewImg.classList.remove('hidden'); };
+          reader.readAsDataURL(file);
+          showToast("Scan optimized successfully.");
+        }, 1500);
+      }
+    };
+
+    let isFav = false; let isImp = false;
+    overlay.querySelector('#wFavToggle').onclick = function() { isFav = !isFav; this.classList.toggle('active'); };
+    overlay.querySelector('#wImpToggle').onclick = function() {
+       if(!isImp) { showImportantDialog(() => { isImp = true; this.classList.add('active'); }); } 
+       else { isImp = false; this.classList.remove('active'); }
+    };
+
+    overlay.querySelector('#saveWalletBtn').onclick = () => {
+      const type = typeSelect.value;
+      const name = overlay.querySelector('#wName').value.trim();
+      const missing = [];
+
+      if (type === 'Bank Card') {
+        const holder = overlay.querySelector('#wHolder').value.trim();
+        const number = overlay.querySelector('#wNum').value.trim();
+        const expiry = overlay.querySelector('#wExp').value.trim();
+        const cvv = overlay.querySelector('#wCvv').value.trim();
+        if (!name) missing.push('Label Name');
+        if (!holder) missing.push('Card Holder Name');
+        if (!number) missing.push('Card Number');
+        if (!expiry) missing.push('Expiry Date');
+        if (!cvv) missing.push('CVV');
+      } else if (type === 'Identity Card') {
+        const holder = overlay.querySelector('#wHolder').value.trim();
+        const number = overlay.querySelector('#wNum').value.trim();
+        if (!name) missing.push('Label Name');
+        if (!holder) missing.push('Full Name');
+        if (!number) missing.push('ID Number');
+      } else if (type === 'Passport') {
+        const holder = overlay.querySelector('#wHolder').value.trim();
+        const number = overlay.querySelector('#wNum').value.trim();
+        const expiry = overlay.querySelector('#wExp').value.trim();
+        if (!name) missing.push('Passport Label');
+        if (!holder) missing.push('Full Name');
+        if (!number) missing.push('Passport Number');
+        if (!expiry) missing.push('Expiry Date');
+      } else if (type === 'License') {
+        const holder = overlay.querySelector('#wHolder').value.trim();
+        const number = overlay.querySelector('#wNum').value.trim();
+        const expDate = overlay.querySelector('#wExpiryDate').value.trim();
+        if (!name) missing.push('License Label');
+        if (!holder) missing.push('Full Name');
+        if (!number) missing.push('License Number');
+        if (!expDate) missing.push('Expiry Date');
+      } else if (type === 'Custom') {
+        if (!name) missing.push('Document Title');
+      }
+
+      if (missing.length) { showRequiredError(missing); return; }
+
+      const newItem = {
+        id: 'w' + Date.now(),
+        type: type,
+        name: name,
+        favorite: isFav,
+        important: isImp,
+        image: previewImg.src || 'https://images.unsplash.com/photo-1542382257-80dedb725088?auto=format&fit=crop&q=80&w=400'
+      };
+
+      if (type === 'Custom') {
+        const customFields = [];
+        overlay.querySelectorAll('.custom-field-row').forEach(row => {
+          const ins = row.querySelectorAll('input');
+          const label = ins[0].value.trim(); const val = ins[1].value.trim();
+          if (label || val) customFields.push({ label: label || 'Unnamed', value: val || '' });
+        });
+        newItem.customFields = customFields;
+      } else {
+        newItem.holder = overlay.querySelector('#wHolder').value;
+        newItem.number = overlay.querySelector('#wNum').value;
+        newItem.category = catGroup.classList.contains('hidden') ? '' : catSelect.value;
+        newItem.expiry = overlay.querySelector('#wExp') ? overlay.querySelector('#wExp').value : '';
+        if (type === 'Bank Card') { newItem.cvv = overlay.querySelector('#wCvv').value; newItem.pin = overlay.querySelector('#wPin').value; }
+        else if (type === 'Identity Card') { newItem.expiryDate = overlay.querySelector('#wExpiryDate').value; newItem.issuingAuthority = overlay.querySelector('#wIssuingAuthority').value; }
+        else if (type === 'Passport') { newItem.dob = overlay.querySelector('#wDob').value; newItem.nationality = overlay.querySelector('#wNationality').value; newItem.placeOfBirth = overlay.querySelector('#wPlaceOfBirth').value; newItem.issueDate = overlay.querySelector('#wIssueDate').value; }
+        else if (type === 'License') { newItem.expiryDate = overlay.querySelector('#wExpiryDate').value; newItem.issuingState = overlay.querySelector('#wIssuingState').value; }
+      }
+
+      walletItems.push(newItem);
+      closeOverlay('walletFormScreen');
+      renderList();
+      showActionDialog('Vault Secured', 'Your document has been encrypted and saved.', 'success', 'Great', null, true);
+    };
+  }
+
+  function openEditWalletForm(id) {
+    const w = walletItems.find(item => item.id === id);
+    if (!w) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'screen-overlay';
+    overlay.id = 'walletEditFormScreen';
+    document.querySelector('.fab-container').classList.add('hidden');
+
+    overlay.innerHTML = `
+      <div class="nav-header">
+        <div class="back-btn" onclick="closeOverlay('walletEditFormScreen')"><i class="fas fa-chevron-left"></i></div>
+        <div class="app-name">Edit Document</div>
+        <div class="back-btn" id="saveEditWalletBtn" style="color: #3B82F6;"><i class="fas fa-check"></i></div>
+      </div>
+      <div class="screen-body">
+        <div class="form-group">
+          <label class="form-label">Document Type</label>
+          <select class="form-input" id="wEditType">
+            <option value="Identity Card" ${w.type === 'Identity Card' ? 'selected' : ''}>Identity Card</option>
+            <option value="Passport" ${w.type === 'Passport' ? 'selected' : ''}>Passport</option>
+            <option value="Bank Card" ${w.type === 'Bank Card' ? 'selected' : ''}>Bank Card</option>
+            <option value="License" ${w.type === 'License' ? 'selected' : ''}>Driving License</option>
+            <option value="Custom" ${w.type === 'Custom' ? 'selected' : ''}>Custom Document</option>
+          </select>
+        </div>
+        <div id="wEditCategoryGroup" class="form-group ${w.category ? '' : 'hidden'}">
+           <label class="form-label">Category</label>
+           <select class="form-input" id="wEditCategory"></select>
+        </div>
+        <div id="editDynamicFields"></div>
+        <div id="editExtraFields" class="hidden"></div>
+
+        <label class="form-label">Document Scan / Photo</label>
+        <div class="w-scan-box" id="editScanTrigger">
+          <img id="wEditPreviewImg" class="w-scan-preview-img" src="${w.image}">
+          <div class="w-scan-overlay" style="opacity: 1;">Change Photo</div>
+        </div>
+        <input type="file" id="wEditFileInput" class="hidden" accept="image/*">
+
+        <label class="form-label" style="margin-top: 24px;">Security Settings</label>
+        <div class="form-status-options">
+          <div class="status-select-btn fav ${w.favorite ? 'active' : ''}" id="wEditFavToggle">
+            <i class="fas fa-star"></i> Favorite
+          </div>
+          <div class="status-select-btn imp ${w.important ? 'active' : ''}" id="wEditImpToggle">
+            <i class="fas fa-exclamation-triangle"></i> Important
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.querySelector('.vault-app').appendChild(overlay);
+
+    const typeSelect = overlay.querySelector('#wEditType');
+    const catGroup = overlay.querySelector('#wEditCategoryGroup');
+    const catSelect = overlay.querySelector('#wEditCategory');
+    const fieldsDiv = overlay.querySelector('#editDynamicFields');
+    const extraDiv = overlay.querySelector('#editExtraFields');
+
+    function updateFields() {
+      const type = typeSelect.value;
+      let html = ''; let extraHtml = '';
+      catGroup.classList.add('hidden'); extraDiv.classList.add('hidden');
+
+      if (type === 'Bank Card') {
+        catGroup.classList.remove('hidden');
+        catSelect.innerHTML = `<option ${w.category === 'Visa' ? 'selected' : ''}>Visa</option>
+                               <option ${w.category === 'MasterCard' ? 'selected' : ''}>MasterCard</option>
+                               <option ${w.category === 'Debit' ? 'selected' : ''}>Debit</option>
+                               <option ${w.category === 'Credit' ? 'selected' : ''}>Credit</option>`;
+        html = `
+          <div class="form-group"><label class="form-label">Label Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditName" value="${escapeHtml(w.name)}"></div>
+          <div class="form-group"><label class="form-label">Card Holder Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditHolder" value="${escapeHtml(w.holder || '')}"></div>
+          <div class="form-group"><label class="form-label">Card Number <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditNum" value="${escapeHtml(w.number || '')}"></div>
+          <div class="form-group"><label class="form-label">Expiry Date (MM/YY) <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditExp" value="${escapeHtml(w.expiry || '')}"></div>
+        `;
+        extraHtml = `<div class="form-group"><label class="form-label">CVV / CVC <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditCvv" value="${escapeHtml(w.cvv || '')}"></div><div class="form-group"><label class="form-label">PIN (optional)</label><input type="text" class="form-input" id="wEditPin" value="${escapeHtml(w.pin || '')}"></div>`;
+        extraDiv.classList.remove('hidden');
+      } else if (type === 'Identity Card') {
+        catGroup.classList.remove('hidden');
+        catSelect.innerHTML = `<option ${w.category === 'National ID' ? 'selected' : ''}>National ID</option><option ${w.category === 'Voter ID' ? 'selected' : ''}>Voter ID</option><option ${w.category === 'Residence Permit' ? 'selected' : ''}>Residence Permit</option>`;
+        html = `
+          <div class="form-group"><label class="form-label">Label Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditName" value="${escapeHtml(w.name)}"></div>
+          <div class="form-group"><label class="form-label">Full Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditHolder" value="${escapeHtml(w.holder || '')}"></div>
+          <div class="form-group"><label class="form-label">ID Number <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditNum" value="${escapeHtml(w.number || '')}"></div>
+        `;
+        extraHtml = `<div class="form-group"><label class="form-label">Expiry Date</label><input type="text" class="form-input" id="wEditExpiryDate" value="${escapeHtml(w.expiryDate || '')}"></div><div class="form-group"><label class="form-label">Issuing Authority</label><input type="text" class="form-input" id="wEditIssuingAuthority" value="${escapeHtml(w.issuingAuthority || '')}"></div>`;
+        extraDiv.classList.remove('hidden');
+      } else if (type === 'Passport') {
+        html = `
+          <div class="form-group"><label class="form-label">Passport Label <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditName" value="${escapeHtml(w.name)}"></div>
+          <div class="form-group"><label class="form-label">Full Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditHolder" value="${escapeHtml(w.holder || '')}"></div>
+          <div class="form-group"><label class="form-label">Passport Number <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditNum" value="${escapeHtml(w.number || '')}"></div>
+          <div class="form-group"><label class="form-label">Expiry Date <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditExp" value="${escapeHtml(w.expiry || '')}"></div>
+        `;
+        extraHtml = `<div class="form-group"><label class="form-label">Date of Birth</label><input type="text" class="form-input" id="wEditDob" value="${escapeHtml(w.dob || '')}"></div><div class="form-group"><label class="form-label">Nationality</label><input type="text" class="form-input" id="wEditNationality" value="${escapeHtml(w.nationality || '')}"></div>`;
+        extraDiv.classList.remove('hidden');
+      } else if (type === 'License') {
+        catGroup.classList.remove('hidden');
+        catSelect.innerHTML = `<option ${w.category === 'Car' ? 'selected' : ''}>Car</option><option ${w.category === 'Motorcycle' ? 'selected' : ''}>Motorcycle</option><option ${w.category === 'Commercial' ? 'selected' : ''}>Commercial</option>`;
+        html = `
+          <div class="form-group"><label class="form-label">License Label <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditName" value="${escapeHtml(w.name)}"></div>
+          <div class="form-group"><label class="form-label">Full Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditHolder" value="${escapeHtml(w.holder || '')}"></div>
+          <div class="form-group"><label class="form-label">License Number <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditNum" value="${escapeHtml(w.number || '')}"></div>
+        `;
+        extraHtml = `<div class="form-group"><label class="form-label">Expiry Date <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditExpiryDate" value="${escapeHtml(w.expiryDate || '')}"></div><div class="form-group"><label class="form-label">Issuing State/Country</label><input type="text" class="form-input" id="wEditIssuingState" value="${escapeHtml(w.issuingState || '')}"></div>`;
+        extraDiv.classList.remove('hidden');
+      } else { // Custom
+        html = `
+          <div class="form-group"><label class="form-label">Document Title <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="wEditName" value="${escapeHtml(w.name)}"></div>
+          <div class="form-group">
+            <label class="form-label">Custom Fields</label>
+            <div id="editCustomFieldsContainer" style="margin-top: 8px;"></div>
+            <button type="button" id="editAddCustomFieldBtn" class="form-input" style="background: #1F2937; text-align: center; margin-top: 12px; cursor:pointer;">
+              <i class="fas fa-plus"></i> Add Field
+            </button>
+          </div>
+        `;
+        extraDiv.classList.remove('hidden');
+      }
+      fieldsDiv.innerHTML = html;
+      extraDiv.innerHTML = extraHtml;
+      if (type === 'Custom') setupCustomFields(overlay, w.customFields || []);
+    }
+
+    typeSelect.onchange = updateFields;
+    updateFields();
+
+    const scanTrigger = overlay.querySelector('#editScanTrigger');
+    const fileInput = overlay.querySelector('#wEditFileInput');
+    const previewImg = overlay.querySelector('#wEditPreviewImg');
+
+    scanTrigger.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+          const reader = new FileReader();
+          reader.onload = (re) => { previewImg.src = re.target.result; };
+          reader.readAsDataURL(file);
+      }
+    };
+
+    let isFav = w.favorite; let isImp = w.important;
+    overlay.querySelector('#wEditFavToggle').onclick = function() { isFav = !isFav; this.classList.toggle('active'); };
+    overlay.querySelector('#wEditImpToggle').onclick = function() {
+       if(!isImp) { showImportantDialog(() => { isImp = true; this.classList.add('active'); }); } 
+       else { isImp = false; this.classList.remove('active'); }
+    };
+
+    overlay.querySelector('#saveEditWalletBtn').onclick = () => {
+      const type = typeSelect.value;
+      const name = overlay.querySelector('#wEditName').value.trim();
+      const missing = [];
+
+      if (type === 'Bank Card') {
+        if (!name) missing.push('Label Name');
+        if (!overlay.querySelector('#wEditHolder').value.trim()) missing.push('Card Holder Name');
+        if (!overlay.querySelector('#wEditNum').value.trim()) missing.push('Card Number');
+        if (!overlay.querySelector('#wEditExp').value.trim()) missing.push('Expiry Date');
+        if (!overlay.querySelector('#wEditCvv').value.trim()) missing.push('CVV');
+      } else if (type === 'Identity Card') {
+        if (!name) missing.push('Label Name');
+        if (!overlay.querySelector('#wEditHolder').value.trim()) missing.push('Full Name');
+        if (!overlay.querySelector('#wEditNum').value.trim()) missing.push('ID Number');
+      } else if (type === 'Passport') {
+        if (!name) missing.push('Passport Label');
+        if (!overlay.querySelector('#wEditHolder').value.trim()) missing.push('Full Name');
+        if (!overlay.querySelector('#wEditNum').value.trim()) missing.push('Passport Number');
+        if (!overlay.querySelector('#wEditExp').value.trim()) missing.push('Expiry Date');
+      } else if (type === 'License') {
+        if (!name) missing.push('License Label');
+        if (!overlay.querySelector('#wEditHolder').value.trim()) missing.push('Full Name');
+        if (!overlay.querySelector('#wEditNum').value.trim()) missing.push('License Number');
+        if (!overlay.querySelector('#wEditExpiryDate').value.trim()) missing.push('Expiry Date');
+      } else if (type === 'Custom') {
+        if (!name) missing.push('Document Title');
+      }
+
+      if (missing.length) { showRequiredError(missing); return; }
+
+      w.type = type; w.name = name; w.image = previewImg.src;
+      w.favorite = isFav; w.important = isImp;
+
+      if (type === 'Custom') {
+        const customFields = [];
+        overlay.querySelectorAll('.edit-custom-field-row').forEach(row => {
+          const ins = row.querySelectorAll('input');
+          const label = ins[0].value.trim(); const val = ins[1].value.trim();
+          if (label || val) customFields.push({ label: label || 'Unnamed', value: val || '' });
+        });
+        w.customFields = customFields;
+      } else {
+        w.holder = overlay.querySelector('#wEditHolder').value;
+        w.number = overlay.querySelector('#wEditNum').value;
+        w.category = catGroup.classList.contains('hidden') ? '' : catSelect.value;
+        w.expiry = overlay.querySelector('#wEditExp') ? overlay.querySelector('#wEditExp').value : '';
+        if (type === 'Bank Card') { w.cvv = overlay.querySelector('#wEditCvv').value; w.pin = overlay.querySelector('#wEditPin').value; }
+        else if (type === 'Identity Card') { w.expiryDate = overlay.querySelector('#wEditExpiryDate').value; w.issuingAuthority = overlay.querySelector('#wEditIssuingAuthority').value; }
+        else if (type === 'Passport') { w.dob = overlay.querySelector('#wEditDob').value; w.nationality = overlay.querySelector('#wEditNationality').value; }
+        else if (type === 'License') { w.expiryDate = overlay.querySelector('#wEditExpiryDate').value; w.issuingState = overlay.querySelector('#wEditIssuingState').value; }
+      }
+
+      closeOverlay('walletEditFormScreen');
+      closeOverlay('wDetailScreen');
+      renderList();
+      showActionDialog('Updated!', 'Document details updated successfully.', 'success', 'Done', null, true);
+    };
+  }
+
+  function openWalletDetail(id) {
+    const w = walletItems.find(item => item.id === id);
+    if (!w) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'screen-overlay';
+    overlay.id = 'wDetailScreen';
+    document.querySelector('.fab-container').classList.add('hidden');
+
+    let extraCards = '';
+    if (w.type === 'Bank Card') {
+      if (w.cvv) extraCards += `<div class="premium-card"><span class="card-label">CVV / CVC</span><div class="card-value"><span>${w.cvv}</span><i class="fas fa-copy" style="color:#3B82F6; font-size:14px;" onclick="copyToClipboard('${w.cvv}', 'CVV')"></i></div></div>`;
+      if (w.pin) extraCards += `<div class="premium-card"><span class="card-label">PIN</span><div class="card-value"><span>${w.pin}</span><i class="fas fa-copy" style="color:#3B82F6; font-size:14px;" onclick="copyToClipboard('${w.pin}', 'PIN')"></i></div></div>`;
+    } else if (w.type === 'Identity Card') {
+      if (w.expiryDate) extraCards += `<div class="premium-card"><span class="card-label">Expiry Date</span><div class="card-value">${w.expiryDate}</div></div>`;
+      if (w.issuingAuthority) extraCards += `<div class="premium-card"><span class="card-label">Issuing Authority</span><div class="card-value">${w.issuingAuthority}</div></div>`;
+    } else if (w.type === 'Passport') {
+      if (w.dob) extraCards += `<div class="premium-card"><span class="card-label">Date of Birth</span><div class="card-value">${w.dob}</div></div>`;
+      if (w.nationality) extraCards += `<div class="premium-card"><span class="card-label">Nationality</span><div class="card-value">${w.nationality}</div></div>`;
+    } else if (w.type === 'License') {
+      if (w.expiryDate) extraCards += `<div class="premium-card"><span class="card-label">Expiry Date</span><div class="card-value">${w.expiryDate}</div></div>`;
+      if (w.issuingState) extraCards += `<div class="premium-card"><span class="card-label">Issuing State/Country</span><div class="card-value">${w.issuingState}</div></div>`;
+    } else if (w.type === 'Custom' && w.customFields) {
+      w.customFields.forEach(f => {
+        extraCards += `<div class="premium-card"><span class="card-label">${escapeHtml(f.label)}</span><div class="card-value"><span>${escapeHtml(f.value)}</span><i class="fas fa-copy" style="color:#3B82F6; font-size:14px;" onclick="copyToClipboard('${escapeHtml(f.value)}', '${escapeHtml(f.label)}')"></i></div></div>`;
+      });
+    }
+
+    overlay.innerHTML = `
+      <div class="nav-header">
+        <div class="back-btn" onclick="closeOverlay('wDetailScreen')"><i class="fas fa-chevron-left"></i></div>
+        <div class="app-name">Document Details</div>
+        <div style="width:40px;"></div> <!-- Placeholder to balance header -->
+      </div>
+      <div class="screen-body">
+        <div class="detail-top-section" style="margin-bottom: 16px;">
+          <div class="detail-app-icon"><i class="fas ${w.type === 'Passport' ? 'fa-passport' : w.type === 'Bank Card' ? 'fa-credit-card' : 'fa-id-card'}"></i></div>
+          <div class="detail-titles">
+            <h2>${w.name}</h2>
+            <p style="text-transform: uppercase; letter-spacing: 1px; font-weight: 700; color: #3B82F6; font-size: 11px;">${w.type} ${w.category ? '• ' + w.category : ''}</p>
+          </div>
+          <div class="detail-header-icons">
+            <i class="fas fa-star fav-toggle-btn ${w.favorite ? 'active' : ''}" id="wDetailFav"></i>
+            <i class="fas fa-exclamation-triangle imp-static-indicator ${w.important ? 'active' : ''}" id="wDetailImp"></i>
+          </div>
+        </div>
+
+        <div class="w-detail-image-hero" id="heroImage">
+           <img src="${w.image}">
+           <div style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.6); padding: 4px 8px; border-radius: 6px; font-size: 10px;">Tap to Expand</div>
+        </div>
+
+        ${w.holder ? `<div class="premium-card"><span class="card-label">User / Holder Name</span><div class="card-value"><span>${w.holder}</span><i class="fas fa-copy" style="color:#3B82F6; font-size:14px;" onclick="copyToClipboard('${w.holder}', 'Name')"></i></div></div>` : ''}
+        ${w.number ? `<div class="premium-card"><span class="card-label">Document Number</span><div class="card-value"><span style="font-family: monospace; letter-spacing: 1px;">${w.number}</span><i class="fas fa-copy" style="color:#3B82F6; font-size:14px;" onclick="copyToClipboard('${w.number}', 'ID')"></i></div></div>` : ''}
+
+        ${w.expiry && !['Identity Card', 'License', 'Custom'].includes(w.type) ? `
+        <div class="premium-card">
+           <span class="card-label">${w.type === 'Bank Card' ? 'Expiry Date (MM/YY)' : 'Expiry Date'}</span>
+           <div class="card-value">${w.expiry}</div>
+        </div>` : ''}
+
+        ${extraCards}
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+          <button style="padding:14px; border-radius:14px; background:#3B82F6; color:white; border:none; font-weight:600; cursor:pointer;" onclick="openEditWalletForm('${w.id}')"><i class="fas fa-edit"></i> Edit</button>
+          <button style="padding:14px; border-radius:14px; background:rgba(239, 68, 68, 0.1); color:#EF4444; border:1px solid rgba(239, 68, 68, 0.2); font-weight:600; cursor:pointer;" onclick="deleteWalletItem('${w.id}')"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+      </div>
+    `;
+
+    document.querySelector('.vault-app').appendChild(overlay);
+    overlay.querySelector('#wDetailFav').onclick = function() { w.favorite = !w.favorite; this.classList.toggle('active'); renderList(); };
+    overlay.querySelector('#wDetailImp').onclick = () => showToast("To change Important status, please go to Edit mode");
+    overlay.querySelector('#heroImage').onclick = () => {
+       const fs = document.createElement('div'); fs.className = 'w-fullscreen-overlay';
+       fs.innerHTML = `<img src="${w.image}" class="w-fullscreen-image"><i class="fas fa-times" style="position: absolute; top: 30px; right: 30px; font-size: 24px; color: white;"></i>`;
+       document.body.appendChild(fs); fs.onclick = () => fs.remove();
+    };
+  }
+
+  function deleteWalletItem(id) {
+    showActionDialog('Delete Document?', 'Are you sure you want to remove this encrypted document?', 'danger', 'Yes, Delete', () => {
+       walletItems = walletItems.filter(i => i.id !== id);
+       closeOverlay('wDetailScreen');
+       renderList();
+       showActionDialog('Deleted', 'Document removed successfully.', 'success', 'Done', null, true);
+    });
+  }
+
+  // ---------- PASSWORD TAB LOGIC ----------
+  function openEditCredentialsForm(id) {
+    const p = passwords.find(item => item.id === id);
+    if (!p) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'screen-overlay'; overlay.id = 'editFormScreen';
+    document.querySelector('.fab-container').classList.add('hidden');
+
+    overlay.innerHTML = `
+      <div class="nav-header">
+        <div class="back-btn" onclick="closeOverlay('editFormScreen')"><i class="fas fa-chevron-left"></i></div>
+        <div class="app-name">Edit Credentials</div>
+        <div class="back-btn" id="saveEditBtn" style="color: #3B82F6;"><i class="fas fa-check"></i></div>
+      </div>
+      <div class="screen-body">
+        <div class="type-toggle" id="editTypeToggle">
+          <div class="toggle-opt ${p.type === 'app' ? 'active' : ''}" data-type="app">App Credentials</div>
+          <div class="toggle-opt ${p.type === 'website' ? 'active' : ''}" data-type="website">Website Login</div>
+        </div>
+        <div class="form-group"><label class="form-label">Platform Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="editPlatformName" value="${escapeHtml(p.name)}"></div>
+        <div class="form-group"><label class="form-label">Username / Email <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="editUsernameEmail" value="${escapeHtml(p.username)}"></div>
+        <div class="form-group"><label class="form-label">Password <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="editPasswordVal" value="${escapeHtml(p.password)}"></div>
+        <label class="form-label">Vault Status</label>
+        <div class="form-status-options">
+          <div class="status-select-btn fav ${p.favorite ? 'active' : ''}" id="editFavToggleForm"><i class="fas fa-star"></i> Mark Favorite</div>
+          <div class="status-select-btn imp ${p.important ? 'active' : ''}" id="editImpToggleForm"><i class="fas fa-exclamation-triangle"></i> Mark Important</div>
+        </div>
+        <div class="form-group"><label class="form-label">8-Digit Security Codes (Comma separated)</label><input type="text" class="form-input" id="editDigitCodesVal" value="${p.digitsCodes.join(', ')}"></div>
+        <div class="form-group"><label class="form-label">Recovery Secret Phrase</label><input type="text" class="form-input" id="editSecretPhraseVal" value="${p.secretPhrase || ''}"></div>
+        <div class="form-group" id="editWebsiteLinkGroup" style="display: ${p.type === 'website' ? 'block' : 'none'};"><label class="form-label">Website Link</label><input type="text" class="form-input" id="editWebsiteLinkVal" value="${p.websiteLink || ''}"></div>
+        <div class="form-group"><label class="form-label">Category / Grouping</label><input type="text" class="form-input" id="editCategoryVal" value="${p.category}"></div>
+        <div class="form-group"><label class="form-label">Confidential Note</label><textarea class="form-input form-textarea" id="editNoteVal">${p.note || ''}</textarea></div>
+      </div>
+    `;
+    document.querySelector('.vault-app').appendChild(overlay);
+
+    let isFav = p.favorite; let isImp = p.important;
+    overlay.querySelector('#editFavToggleForm').onclick = function() { isFav = !isFav; this.classList.toggle('active'); };
+    overlay.querySelector('#editImpToggleForm').onclick = () => { if (!isImp) { showImportantDialog(() => { isImp = true; overlay.querySelector('#editImpToggleForm').classList.add('active'); }); } else { isImp = false; overlay.querySelector('#editImpToggleForm').classList.remove('active'); } };
+
+    const toggles = overlay.querySelectorAll('.toggle-opt');
+    toggles.forEach(t => {
+      t.onclick = () => { toggles.forEach(opt => opt.classList.remove('active')); t.classList.add('active'); p.type = t.dataset.type; overlay.querySelector('#editWebsiteLinkGroup').style.display = p.type === 'website' ? 'block' : 'none'; };
+    });
+
+    overlay.querySelector('#saveEditBtn').onclick = () => {
+      const name = overlay.querySelector('#editPlatformName').value.trim();
+      const user = overlay.querySelector('#editUsernameEmail').value.trim();
+      const pass = overlay.querySelector('#editPasswordVal').value.trim();
+      const missing = [];
+      if (!name) missing.push('Platform Name');
+      if (!user) missing.push('Username / Email');
+      if (!pass) missing.push('Password');
+      if (missing.length) { showRequiredError(missing); return; }
+
+      p.name = name; p.username = user; p.password = pass;
+      p.digitsCodes = overlay.querySelector('#editDigitCodesVal').value.split(',').map(c => c.trim()).filter(c => c !== "");
+      p.secretPhrase = overlay.querySelector('#editSecretPhraseVal').value; p.websiteLink = overlay.querySelector('#editWebsiteLinkVal').value;
+      p.category = overlay.querySelector('#editCategoryVal').value || 'General'; p.note = overlay.querySelector('#editNoteVal').value;
+      p.favorite = isFav; p.important = isImp; p.strength = p.password.length > 8 ? 'strong' : 'medium';
+      closeOverlay('editFormScreen'); closeOverlay('detailScreen'); openDetail(p.id); renderList();
+      showActionDialog('Updated!', 'Credentials updated successfully.', 'success', 'Done', null, true);
+    };
+  }
+
+  function openAddCredentialsForm(skipToggle = false) {
+    if (!skipToggle) toggleFabMenu(); 
+    const overlay = document.createElement('div');
+    overlay.className = 'screen-overlay'; overlay.id = 'addFormScreen';
+    document.querySelector('.fab-container').classList.add('hidden');
+
+    overlay.innerHTML = `
+      <div class="nav-header">
+        <div class="back-btn" onclick="closeOverlay('addFormScreen')"><i class="fas fa-chevron-left"></i></div>
+        <div class="app-name">Add Credentials</div>
+        <div class="back-btn" id="saveCredentialsBtn" style="color: #3B82F6;"><i class="fas fa-check"></i></div>
+      </div>
+      <div class="screen-body">
+        <div class="type-toggle" id="formTypeToggle"><div class="toggle-opt active" data-type="app">App Credentials</div><div class="toggle-opt" data-type="website">Website Login</div></div>
+        <div class="form-group"><label class="form-label">Platform Name <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="platformName" placeholder="e.g. Google, Binance"></div>
+        <div class="form-group"><label class="form-label">Username / Email <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="usernameEmail" placeholder="user@example.com"></div>
+        <div class="form-group"><label class="form-label">Password <span style="color:#EF4444;">*</span></label><input type="text" class="form-input" id="passwordVal" placeholder="********"></div>
+        <label class="form-label">Vault Status</label>
+        <div class="form-status-options"><div class="status-select-btn fav" id="favToggleForm"><i class="fas fa-star"></i> Mark Favorite</div><div class="status-select-btn imp" id="impToggleForm"><i class="fas fa-exclamation-triangle"></i> Mark Important</div></div>
+        <div class="form-group"><label class="form-label">8-Digit Security Codes (Comma separated)</label><input type="text" class="form-input" id="digitCodesVal" placeholder="12345678, 87654321"></div>
+        <div class="form-group"><label class="form-label">Recovery Secret Phrase</label><input type="text" class="form-input" id="secretPhraseVal" placeholder="word1 word2 word3..."></div>
+        <div class="form-group" id="websiteLinkGroup" style="display: none;"><label class="form-label">Website Link</label><input type="text" class="form-input" id="websiteLinkVal" placeholder="https://example.com"></div>
+        <div class="form-group"><label class="form-label">Category / Grouping</label><input type="text" class="form-input" id="categoryVal" placeholder="Social, Dev, Banking"></div>
+        <div class="form-group"><label class="form-label">Confidential Note</label><textarea class="form-input form-textarea" id="noteVal" placeholder="Any extra information..."></textarea></div>
+      </div>
+    `;
+    document.querySelector('.vault-app').appendChild(overlay);
+
+    let isFav = false; let isImp = false; let currentType = 'app';
+    overlay.querySelector('#favToggleForm').onclick = function() { isFav = !isFav; this.classList.toggle('active'); };
+    overlay.querySelector('#impToggleForm').onclick = () => { if (!isImp) { showImportantDialog(() => { isImp = true; overlay.querySelector('#impToggleForm').classList.add('active'); }); } else { isImp = false; overlay.querySelector('#impToggleForm').classList.remove('active'); } };
+    const toggles = overlay.querySelectorAll('.toggle-opt');
+    toggles.forEach(t => { t.onclick = () => { toggles.forEach(opt => opt.classList.remove('active')); t.classList.add('active'); currentType = t.dataset.type; overlay.querySelector('#websiteLinkGroup').style.display = currentType === 'website' ? 'block' : 'none'; }; });
+
+    overlay.querySelector('#saveCredentialsBtn').onclick = () => {
+      const name = overlay.querySelector('#platformName').value.trim(); const user = overlay.querySelector('#usernameEmail').value.trim(); const pass = overlay.querySelector('#passwordVal').value.trim();
+      const missing = [];
+      if(!name) missing.push('Platform Name'); if(!user) missing.push('Username / Email'); if(!pass) missing.push('Password');
+      if(missing.length) { showRequiredError(missing); return; }
+
+      passwords.push({ id: 'p' + Date.now(), type: currentType, name, username: user, password: pass, category: overlay.querySelector('#categoryVal').value || 'General', favorite: isFav, important: isImp, strength: pass.length > 8 ? 'strong' : 'medium', digitsCodes: overlay.querySelector('#digitCodesVal').value.split(',').map(c => c.trim()).filter(c => c !== ""), secretPhrase: overlay.querySelector('#secretPhraseVal').value, websiteLink: overlay.querySelector('#websiteLinkVal').value, note: overlay.querySelector('#noteVal').value });
+      closeOverlay('addFormScreen'); renderList(); showActionDialog('Entry Saved!', 'Credentials stored safely.', 'success', 'Done', null, true);
+    };
+  }
+
+  function openDetail(id) {
+  const p = passwords.find(item => item.id === id);
+  if (!p) return;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'screen-overlay';
+  overlay.id = 'detailScreen';
+
+  document.querySelector('.fab-container').classList.add('hidden');
+
+  const phraseWords = p.secretPhrase ? p.secretPhrase.trim().split(/\s+/) : [];
+
+  overlay.innerHTML = `
+    <div class="nav-header">
+      <div class="back-btn" onclick="closeOverlay('detailScreen')"><i class="fas fa-chevron-left"></i></div>
+      <div class="app-name">Details View</div>
+      <div style="width:40px;"></div> <!-- Placeholder to balance header -->
+    </div>
+
+    <div class="screen-body">
+      <div class="detail-top-section">
+        <div class="detail-app-icon"><i class="fas ${p.type === 'app' ? 'fa-mobile-alt' : 'fa-globe'}"></i></div>
+        <div class="detail-titles">
+          <h2>${escapeHtml(p.name)}</h2>
+          <p>Platform Name</p>
+        </div>
+        <div class="detail-header-icons">
+          <i class="fas fa-star fav-toggle-btn ${p.favorite ? 'active' : ''}" id="favBtnModal"></i>
+          <i class="fas fa-exclamation-triangle imp-static-indicator ${p.important ? 'active' : ''}" id="impBtnStatic"></i>
+        </div>
+      </div>
+
+      <div class="premium-card">
+        <span class="card-label">Identification (Username/Email)</span>
+        <div class="card-value">
+          <span>${escapeHtml(p.username)}</span>
+          <i class="fas fa-copy" style="color:#3B82F6; font-size:14px; cursor:pointer;" onclick="copyToClipboard('${escapeHtml(p.username)}', 'Username')"></i>
+        </div>
+      </div>
+
+      <div class="premium-card password-focus-card">
+        <span class="card-label">Security Key (Password)</span>
+        <div class="card-value">
+          <span id="pwdDisplay">••••••••</span>
+          <div class="pwd-actions">
+            <i class="fas fa-eye" id="pwdToggle"></i>
+            <i class="fas fa-copy" onclick="copyToClipboard('${escapeHtml(p.password)}', 'Password')"></i>
+          </div>
+        </div>
+      </div>
+
+      ${p.type === 'website' && p.websiteLink ? `
+      <div class="premium-card">
+        <span class="card-label">Website Link</span>
+        <div class="card-value">
+          <span style="font-size: 13px; word-break: break-all;">${escapeHtml(p.websiteLink)}</span>
+          <i class="fas fa-copy" style="color:#3B82F6; font-size:14px; cursor:pointer;" onclick="copyToClipboard('${escapeHtml(p.websiteLink)}', 'Website Link')"></i>
+        </div>
+      </div>
+      ` : ''}
+
+      ${p.digitsCodes.length > 0 ? `
+      <div class="premium-card">
+        <span class="card-label">8-Digit Security Codes</span>
+        <div class="codes-grid">
+          ${p.digitsCodes.map(code => `<div class="code-chip" onclick="copyToClipboard('${escapeHtml(code)}', 'Secure Code')">${escapeHtml(code)}</div>`).join('')}
+        </div>
+      </div>
+      ` : ''}
+
+      ${phraseWords.length > 0 ? `
+      <div class="premium-card">
+        <span class="card-label">Recovery Secret Phrase</span>
+        <div class="phrase-container">
+          ${phraseWords.map((word, i) => `<div class="phrase-word"><span class="word-index">${i + 1}</span><span>${escapeHtml(word)}</span></div>`).join('')}
+        </div>
+      </div>
+      ` : ''}
+
+      <div class="premium-card">
+        <span class="card-label">Category / Grouping</span>
+        <div class="card-value" style="font-size:14px;">${escapeHtml(p.category)}</div>
+        <div style="margin-top:16px;">
+          <span class="card-label">Confidential Note</span>
+          <p style="font-size:13px; line-height:1.5; color:#9CA3AF;">${escapeHtml(p.note) || 'No notes.'}</p>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px;">
+        <button style="padding:14px; border-radius:14px; background:#3B82F6; color:white; border:none; font-weight:600; cursor:pointer;" onclick="openEditCredentialsForm('${p.id}')"><i class="fas fa-edit"></i> Edit</button>
+        <button style="padding:14px; border-radius:14px; background:rgba(239, 68, 68, 0.1); color:#EF4444; border:1px solid rgba(239, 68, 68, 0.2); font-weight:600; cursor:pointer;" onclick="handleDelete('${p.id}')"><i class="fas fa-trash"></i> Delete</button>
+      </div>
+    </div>
+  `;
+
+  document.querySelector('.vault-app').appendChild(overlay);
+
+  const pwdBtn = overlay.querySelector('#pwdToggle');
+  const pwdTxt = overlay.querySelector('#pwdDisplay');
+  let isRevealed = false;
+  pwdBtn.onclick = () => {
+    isRevealed = !isRevealed;
+    pwdTxt.textContent = isRevealed ? p.password : '••••••••';
+    pwdBtn.classList.toggle('fa-eye');
+    pwdBtn.classList.toggle('fa-eye-slash');
+  };
+
+  overlay.querySelector('#favBtnModal').onclick = function() {
+    p.favorite = !p.favorite;
+    this.classList.toggle('active');
+    renderList();
+  };
+
+  overlay.querySelector('#impBtnStatic').onclick = () => {
+    showToast("To change Important status, please go to Edit mode");
+  };
+}
+
+  // ---------- FILTER SYSTEM SECTION ----------
+  function renderFilterOptions() {
+    const menu = document.getElementById('filterMenu');
+    const activeTabEl = document.querySelector('.tab.active');
+    if (!activeTabEl) return;
+    const currentActiveTab = activeTabEl.dataset.tab;
+
+    let options = [];
+
+    if (currentActiveTab === 'passwords') {
+      options = [
+        { key: 'all', label: 'All Items' },
+        { key: 'favorites', label: 'Favorites' },
+        { key: 'important', label: 'Important' },
+        { key: 'strong', label: 'Strong Passwords' }
+      ];
+    }
+    else if (currentActiveTab === 'wallet') {
+      options = [
+        { key: 'all', label: 'All Documents' },
+        { key: 'favorites', label: 'Favorites' },
+        { key: 'important', label: 'Important' },
+        { key: 'identity', label: 'Identity' },
+        { key: 'financial', label: 'Financial' },
+        { key: 'travel', label: 'Travel' }
+      ];
+    }
+    else if (currentActiveTab === 'notes') {
+      options = [
+        { key: 'all', label: 'All Notes' },
+        { key: 'favorites', label: 'Favorites' },
+        { key: 'important', label: 'Important' },
+        { key: 'locked', label: 'Locked Notes' }
+      ];
+    }
+
+    menu.innerHTML = options.map(opt => `
+      <div class="filter-option ${opt.key === activeFilter ? 'selected' : ''}" 
+           data-filter="${opt.key}">
+        ${opt.label}
+      </div>
+    `).join('');
+  }
+
+  // ---------- NOTES SECTION ----------
+  function openAddNoteScreen() {
+    const overlay = document.createElement('div');
+    overlay.className = 'screen-overlay';
+    overlay.id = 'addNoteScreen';
+    document.querySelector('.fab-container').classList.add('hidden');
+
+    overlay.innerHTML = `
+      <div class="nav-header">
+        <div class="back-btn" onclick="closeOverlay('addNoteScreen')"><i class="fas fa-chevron-left"></i></div>
+        <div class="app-name">Add Note</div>
+        <div class="back-btn" id="saveNoteBtn" style="color: #3B82F6;"><i class="fas fa-check"></i></div>
+      </div>
+      <div class="screen-body">
+        <div class="form-group">
+          <label class="form-label">Title <span style="color:#EF4444;">*</span></label>
+          <input type="text" class="form-input" id="noteTitle" placeholder="Note title">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Content</label>
+          <textarea class="form-input form-textarea" id="noteContent" rows="8" placeholder="Write your note..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags (comma separated)</label>
+          <input type="text" class="form-input" id="noteTags" placeholder="work, personal">
+        </div>
+        <div class="form-status-options">
+          <div class="status-select-btn fav" id="noteFavToggle"><i class="fas fa-star"></i> Favorite</div>
+          <div class="status-select-btn imp" id="noteImpToggle"><i class="fas fa-exclamation-triangle"></i> Important</div>
+          <div class="status-select-btn" id="noteLockToggle"><i class="fas fa-lock"></i> Lock Note</div>
+        </div>
+      </div>
+    `;
+
+    document.querySelector('.vault-app').appendChild(overlay);
+
+    let isFav = false, isImp = false, isLocked = false;
+    const favBtn = overlay.querySelector('#noteFavToggle');
+    const impBtn = overlay.querySelector('#noteImpToggle');
+    const lockBtn = overlay.querySelector('#noteLockToggle');
+
+    favBtn.onclick = () => { isFav = !isFav; favBtn.classList.toggle('active'); };
+    impBtn.onclick = () => { isImp = !isImp; impBtn.classList.toggle('active'); };
+    lockBtn.onclick = () => { isLocked = !isLocked; lockBtn.classList.toggle('active'); lockBtn.classList.toggle('fav'); };
+
+    overlay.querySelector('#saveNoteBtn').onclick = () => {
+      const title = overlay.querySelector('#noteTitle').value.trim();
+      if (!title) {
+        showActionDialog('Missing Title', 'Please enter a title for your note.', 'danger', 'OK', null, true);
+        return;
+      }
+      const tags = overlay.querySelector('#noteTags').value.split(',').map(t => t.trim()).filter(t => t);
+      notes.push({
+        id: 'n' + Date.now(),
+        title: title,
+        content: overlay.querySelector('#noteContent').value,
+        tags: tags,
+        favorite: isFav,
+        important: isImp,
+        locked: isLocked,
+        updatedAt: new Date().toISOString()
+      });
+      closeOverlay('addNoteScreen');
+      renderList();
+      showActionDialog('Note Saved', 'Your secure note has been added.', 'success', 'OK', null, true);
+    };
+  }
+
+  function openEditNoteScreen(id) {
+    const note = notes.find(n => n.id === id);
+    if (!note) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'screen-overlay';
+    overlay.id = 'editNoteScreen';
+    document.querySelector('.fab-container').classList.add('hidden');
+
+    overlay.innerHTML = `
+      <div class="nav-header">
+        <div class="back-btn" onclick="closeOverlay('editNoteScreen')"><i class="fas fa-chevron-left"></i></div>
+        <div class="app-name">Edit Note</div>
+        <div class="back-btn" id="saveEditNoteBtn" style="color: #3B82F6;"><i class="fas fa-check"></i></div>
+      </div>
+      <div class="screen-body">
+        <div class="form-group">
+          <label class="form-label">Title <span style="color:#EF4444;">*</span></label>
+          <input type="text" class="form-input" id="editNoteTitle" value="${escapeHtml(note.title)}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Content</label>
+          <textarea class="form-input form-textarea" id="editNoteContent" rows="8">${escapeHtml(note.content)}</textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags (comma separated)</label>
+          <input type="text" class="form-input" id="editNoteTags" value="${note.tags.join(', ')}">
+        </div>
+        <div class="form-status-options">
+          <div class="status-select-btn fav ${note.favorite ? 'active' : ''}" id="editNoteFavToggle"><i class="fas fa-star"></i> Favorite</div>
+          <div class="status-select-btn imp ${note.important ? 'active' : ''}" id="editNoteImpToggle"><i class="fas fa-exclamation-triangle"></i> Important</div>
+          <div class="status-select-btn ${note.locked ? 'active' : ''}" id="editNoteLockToggle"><i class="fas fa-lock"></i> Lock Note</div>
+        </div>
+      </div>
+    `;
+
+    document.querySelector('.vault-app').appendChild(overlay);
+
+    let isFav = note.favorite, isImp = note.important, isLocked = note.locked;
+    const favBtn = overlay.querySelector('#editNoteFavToggle');
+    const impBtn = overlay.querySelector('#editNoteImpToggle');
+    const lockBtn = overlay.querySelector('#editNoteLockToggle');
+
+    favBtn.onclick = () => { isFav = !isFav; favBtn.classList.toggle('active'); };
+    impBtn.onclick = () => { isImp = !isImp; impBtn.classList.toggle('active'); };
+    lockBtn.onclick = () => { isLocked = !isLocked; lockBtn.classList.toggle('active'); lockBtn.classList.toggle('fav'); };
+
+    overlay.querySelector('#saveEditNoteBtn').onclick = () => {
+      const title = overlay.querySelector('#editNoteTitle').value.trim();
+      if (!title) {
+        showActionDialog('Missing Title', 'Please enter a title for your note.', 'danger', 'OK', null, true);
+        return;
+      }
+      note.title = title;
+      note.content = overlay.querySelector('#editNoteContent').value;
+      note.tags = overlay.querySelector('#editNoteTags').value.split(',').map(t => t.trim()).filter(t => t);
+      note.favorite = isFav;
+      note.important = isImp;
+      note.locked = isLocked;
+      note.updatedAt = new Date().toISOString();
+      closeOverlay('editNoteScreen');
+      closeOverlay('noteDetailScreen'); 
+      openNoteDetail(note.id);
+      renderList();
+      showActionDialog('Note Updated', 'Changes saved.', 'success', 'OK', null, true);
+    };
+  }
+
+  function openNoteDetail(id) {
+    const note = notes.find(n => n.id === id);
+    if (!note) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'screen-overlay';
+    overlay.id = 'noteDetailScreen';
+    document.querySelector('.fab-container').classList.add('hidden');
+
+    const lockedHtml = note.locked ? `
+      <div class="locked-note" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; text-align: center;">
+        <i class="fas fa-lock" style="font-size: 48px; color: #3B82F6; margin-bottom: 16px;"></i>
+        <p style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">Secure Note</p>
+        <span style="font-size: 14px; color: #9CA3AF; cursor: pointer;" id="unlockNoteBtn">Tap to unlock</span>
+      </div>
+    ` : `
+      <div style="margin-bottom: 20px;">
+        <div class="tags-row" style="margin-bottom: 16px;">
+          ${note.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+        </div>
+        <div style="font-size: 15px; line-height: 1.6; color: #E5E7EB; white-space: pre-wrap;">
+          ${escapeHtml(note.content).replace(/\n/g, '<br>')}
+        </div>
+      </div>
+    `;
+
+    overlay.innerHTML = `
+      <div class="nav-header">
+        <div class="back-btn" onclick="closeOverlay('noteDetailScreen')"><i class="fas fa-chevron-left"></i></div>
+        <div class="app-name">Note</div>
+        <div class="back-btn" id="copyNoteContent" style="color: #3B82F6;"><i class="fas fa-copy"></i></div>
+      </div>
+      <div class="screen-body">
+        <div class="detail-top-section">
+          <div class="detail-app-icon"><i class="fas fa-sticky-note"></i></div>
+          <div class="detail-titles">
+            <h2>${escapeHtml(note.title)}</h2>
+            <p>Last updated ${new Date(note.updatedAt).toLocaleString()}</p>
+          </div>
+          <div class="detail-header-icons">
+            <i class="fas fa-star fav-toggle-btn ${note.favorite ? 'active' : ''}" id="noteDetailFav"></i>
+            <i class="fas fa-exclamation-triangle imp-static-indicator ${note.important ? 'active' : ''}" id="noteDetailImp"></i>
+            <i class="fas fa-lock ${note.locked ? 'active' : ''}" id="noteDetailLock" style="cursor: pointer;"></i>
+          </div>
+        </div>
+        <div id="noteContentContainer">${lockedHtml}</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px;">
+          <button style="padding:14px; border-radius:14px; background:#3B82F6; color:white; border:none; font-weight:600; cursor:pointer;" onclick="openEditNoteScreen('${note.id}')"><i class="fas fa-edit"></i> Edit</button>
+          <button style="padding:14px; border-radius:14px; background:rgba(239, 68, 68, 0.1); color:#EF4444; border:1px solid rgba(239, 68, 68, 0.2); font-weight:600; cursor:pointer;" onclick="deleteNote('${note.id}')"><i class="fas fa-trash"></i> Delete</button>
+        </div>
+      </div>
+    `;
+
+    document.querySelector('.vault-app').appendChild(overlay);
+
+    const favIcon = overlay.querySelector('#noteDetailFav');
+    const impIcon = overlay.querySelector('#noteDetailImp');
+    const lockIcon = overlay.querySelector('#noteDetailLock');
+    const copyBtn = overlay.querySelector('#copyNoteContent');
+
+    favIcon.onclick = () => {
+      note.favorite = !note.favorite;
+      favIcon.classList.toggle('active');
+      renderList();
+    };
+
+    impIcon.onclick = () => {
+      showToast("To change Important status, please go to Edit mode");
+    };
+
+    lockIcon.onclick = () => {
+      showToast("To change Lock status, please go to Edit mode");
+    };
+
+    copyBtn.onclick = () => {
+      copyToClipboard(note.content, 'Note Content');
+    };
+
+    const unlockBtn = overlay.querySelector('#unlockNoteBtn');
+    if (unlockBtn) {
+      unlockBtn.onclick = () => {
+        const container = overlay.querySelector('#noteContentContainer');
+        container.innerHTML = `
+          <div style="margin-bottom: 20px;">
+            <div class="tags-row" style="margin-bottom: 16px;">
+              ${note.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('')}
+            </div>
+            <div style="font-size: 15px; line-height: 1.6; color: #E5E7EB; white-space: pre-wrap;">
+              ${escapeHtml(note.content).replace(/\n/g, '<br>')}
+            </div>
+          </div>
+        `;
+      };
+    }
+  }
+
+  function deleteNote(id) {
+    showActionDialog('Delete Note?', 'This note will be permanently removed.', 'danger', 'Delete', () => {
+      notes = notes.filter(n => n.id !== id);
+      closeOverlay('noteDetailScreen');
+      renderList();
+      showActionDialog('Deleted', 'Note removed.', 'success', 'OK', null, true);
+    });
+  }
+
+  // --- UI UTILS ---
+  function closeOverlay(id) { const screen = document.getElementById(id); if (screen) screen.remove(); document.querySelector('.fab-container').classList.remove('hidden'); }
+  function toggleFabMenu() { const menu = document.getElementById('fabMenu'); const btn = document.getElementById('fabBtn'); menu.classList.toggle('show'); btn.classList.toggle('active'); }
+  function handleDelete(id) { showActionDialog('Delete?', 'Remove this permanently?', 'danger', 'Delete', () => { passwords = passwords.filter(item => item.id !== id); closeOverlay('detailScreen'); renderList(); }); }
+
+  // --- INIT ---
+  const filterBtn = document.getElementById('filterToggle'); 
+  const filterMenu = document.getElementById('filterMenu');
+  
+  filterBtn.onclick = (e) => { 
+    e.stopPropagation(); 
+    filterMenu.classList.toggle('show'); 
+  };
+  
+  // Tab Click Handler Update
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+      tab.classList.add('active');
+
+      activeTab = tab.dataset.tab;
+      activeFilter = 'all';
+
+      renderFilterOptions();
+      renderList();
+    });
+  });
+
+  // Handle Filter Option Click
+  document.getElementById('filterMenu').addEventListener('click', (e) => {
+    const option = e.target.closest('.filter-option');
+    if (!option) return;
+
+    activeFilter = option.dataset.filter;
+
+    renderFilterOptions();
+    renderList();
+    filterMenu.classList.remove('show');
+  });
+
+  window.onclick = () => { if (filterMenu.classList.contains('show')) filterMenu.classList.remove('show'); };
+  document.getElementById('searchInput').oninput = (e) => { searchQuery = e.target.value.toLowerCase(); renderList(); };
+  
+  document.getElementById('fabBtn').onclick = () => {
+    if (activeTab === 'passwords') {
+      openAddCredentialsForm(true); 
+    } else if (activeTab === 'wallet') {
+      openAddWalletForm(true);
+    } else if (activeTab === 'notes') {
+      openAddNoteScreen();
+    }
+  };
+
+  // Initial load
+  renderFilterOptions();
+  renderList();
+  
+  document.getElementById('cancelImpAction').onclick = () => document.getElementById('impDialog').classList.add('hidden');
+  document.getElementById('confirmImpAction').onclick = () => { if (dialogCallback) dialogCallback(); document.getElementById('impDialog').classList.add('hidden'); showToast("Server backup enabled"); };
+</script>
+
+</body>
+</html>

@@ -2,6 +2,13 @@
 .gradle/
 build/
 
+# Android
+**/build/
+**/captures/
+.externalNativeBuild/
+.cxx/
+.app/**
+
 # Logs
 *.log
 
